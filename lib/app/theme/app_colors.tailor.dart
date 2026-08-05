@@ -10,6 +10,7 @@ part of 'app_colors.dart';
 // **************************************************************************
 
 mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
+  Color get black;
   Color get white;
   Color get background;
   Color get appBar;
@@ -23,6 +24,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
 
   @override
   Colors copyWith({
+    Color? black,
     Color? white,
     Color? background,
     Color? appBar,
@@ -35,6 +37,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
     Color? textSecondary,
   }) {
     return Colors(
+      black: black ?? this.black,
       white: white ?? this.white,
       background: background ?? this.background,
       appBar: appBar ?? this.appBar,
@@ -52,6 +55,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
   Colors lerp(covariant ThemeExtension<Colors>? other, double t) {
     if (other is! Colors) return this as Colors;
     return Colors(
+      black: Color.lerp(black, other.black, t)!,
       white: Color.lerp(white, other.white, t)!,
       background: Color.lerp(background, other.background, t)!,
       appBar: Color.lerp(appBar, other.appBar, t)!,
@@ -70,6 +74,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is Colors &&
+            const DeepCollectionEquality().equals(black, other.black) &&
             const DeepCollectionEquality().equals(white, other.white) &&
             const DeepCollectionEquality().equals(
               background,
@@ -104,6 +109,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
   int get hashCode {
     return Object.hash(
       runtimeType.hashCode,
+      const DeepCollectionEquality().hash(black),
       const DeepCollectionEquality().hash(white),
       const DeepCollectionEquality().hash(background),
       const DeepCollectionEquality().hash(appBar),
@@ -120,6 +126,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
 
 extension ColorsBuildContextProps on BuildContext {
   Colors get colors => Theme.of(this).extension<Colors>()!;
+  Color get black => colors.black;
   Color get white => colors.white;
   Color get background => colors.background;
   Color get appBar => colors.appBar;

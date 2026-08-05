@@ -6,6 +6,7 @@ part 'app_colors.tailor.dart';
 @TailorMixin()
 class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
   const Colors({
+    required this.black,
     required this.white,
     required this.background,
     required this.appBar,
@@ -18,6 +19,9 @@ class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
     required this.textSecondary,
   });
 
+  @override
+  @override
+  final Color black;
   @override
   final Color white;
   @override
@@ -40,6 +44,7 @@ class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
   final Color textSecondary;
 
   static const light = Colors(
+    black: Color(0xFF000000),
     white: Color(0xFFFFFFFF),
     background: Color(0xFFF0F0F0),
     appBar: Color(0xFF242424),
