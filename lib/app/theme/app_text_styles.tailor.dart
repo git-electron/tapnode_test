@@ -9,7 +9,7 @@ part of 'app_text_styles.dart';
 // TailorAnnotationsGenerator
 // **************************************************************************
 
-mixin _$AppTextStylesTailorMixin on ThemeExtension<AppTextStyles> {
+mixin _$StylesTailorMixin on ThemeExtension<Styles> {
   TextStyle get logo;
   TextStyle get header1;
   TextStyle get header2;
@@ -20,7 +20,7 @@ mixin _$AppTextStylesTailorMixin on ThemeExtension<AppTextStyles> {
   TextStyle get dropdownMenu2;
 
   @override
-  AppTextStyles copyWith({
+  Styles copyWith({
     TextStyle? logo,
     TextStyle? header1,
     TextStyle? header2,
@@ -30,7 +30,7 @@ mixin _$AppTextStylesTailorMixin on ThemeExtension<AppTextStyles> {
     TextStyle? dropdownMenu,
     TextStyle? dropdownMenu2,
   }) {
-    return AppTextStyles(
+    return Styles(
       logo: logo ?? this.logo,
       header1: header1 ?? this.header1,
       header2: header2 ?? this.header2,
@@ -43,9 +43,9 @@ mixin _$AppTextStylesTailorMixin on ThemeExtension<AppTextStyles> {
   }
 
   @override
-  AppTextStyles lerp(covariant ThemeExtension<AppTextStyles>? other, double t) {
-    if (other is! AppTextStyles) return this as AppTextStyles;
-    return AppTextStyles(
+  Styles lerp(covariant ThemeExtension<Styles>? other, double t) {
+    if (other is! Styles) return this as Styles;
+    return Styles(
       logo: TextStyle.lerp(logo, other.logo, t)!,
       header1: TextStyle.lerp(header1, other.header1, t)!,
       header2: TextStyle.lerp(header2, other.header2, t)!,
@@ -61,7 +61,7 @@ mixin _$AppTextStylesTailorMixin on ThemeExtension<AppTextStyles> {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is AppTextStyles &&
+            other is Styles &&
             const DeepCollectionEquality().equals(logo, other.logo) &&
             const DeepCollectionEquality().equals(header1, other.header1) &&
             const DeepCollectionEquality().equals(header2, other.header2) &&
@@ -94,14 +94,14 @@ mixin _$AppTextStylesTailorMixin on ThemeExtension<AppTextStyles> {
   }
 }
 
-extension AppTextStylesBuildContextProps on BuildContext {
-  AppTextStyles get appTextStyles => Theme.of(this).extension<AppTextStyles>()!;
-  TextStyle get logo => appTextStyles.logo;
-  TextStyle get header1 => appTextStyles.header1;
-  TextStyle get header2 => appTextStyles.header2;
-  TextStyle get header3 => appTextStyles.header3;
-  TextStyle get text1 => appTextStyles.text1;
-  TextStyle get text2 => appTextStyles.text2;
-  TextStyle get dropdownMenu => appTextStyles.dropdownMenu;
-  TextStyle get dropdownMenu2 => appTextStyles.dropdownMenu2;
+extension StylesBuildContextProps on BuildContext {
+  Styles get styles => Theme.of(this).extension<Styles>()!;
+  TextStyle get logo => styles.logo;
+  TextStyle get header1 => styles.header1;
+  TextStyle get header2 => styles.header2;
+  TextStyle get header3 => styles.header3;
+  TextStyle get text1 => styles.text1;
+  TextStyle get text2 => styles.text2;
+  TextStyle get dropdownMenu => styles.dropdownMenu;
+  TextStyle get dropdownMenu2 => styles.dropdownMenu2;
 }

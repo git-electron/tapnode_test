@@ -6,9 +6,8 @@ import '../../gen/fonts.gen.dart';
 part 'app_text_styles.tailor.dart';
 
 @TailorMixin()
-class AppTextStyles extends ThemeExtension<AppTextStyles>
-    with _$AppTextStylesTailorMixin {
-  const AppTextStyles({
+class Styles extends ThemeExtension<Styles> with _$StylesTailorMixin {
+  const Styles({
     required this.logo,
     required this.header1,
     required this.header2,
@@ -36,7 +35,7 @@ class AppTextStyles extends ThemeExtension<AppTextStyles>
   @override
   final TextStyle dropdownMenu2;
 
-  static const light = AppTextStyles(
+  static const light = Styles(
     logo: TextStyle(
       fontFamily: FontFamily.inter,
       fontWeight: FontWeight.w800,

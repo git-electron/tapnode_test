@@ -9,7 +9,7 @@ part of 'app_colors.dart';
 // TailorAnnotationsGenerator
 // **************************************************************************
 
-mixin _$AppColorsTailorMixin on ThemeExtension<AppColors> {
+mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
   Color get white;
   Color get background;
   Color get appBar;
@@ -22,7 +22,7 @@ mixin _$AppColorsTailorMixin on ThemeExtension<AppColors> {
   Color get textSecondary;
 
   @override
-  AppColors copyWith({
+  Colors copyWith({
     Color? white,
     Color? background,
     Color? appBar,
@@ -34,7 +34,7 @@ mixin _$AppColorsTailorMixin on ThemeExtension<AppColors> {
     Color? textPrimary,
     Color? textSecondary,
   }) {
-    return AppColors(
+    return Colors(
       white: white ?? this.white,
       background: background ?? this.background,
       appBar: appBar ?? this.appBar,
@@ -49,9 +49,9 @@ mixin _$AppColorsTailorMixin on ThemeExtension<AppColors> {
   }
 
   @override
-  AppColors lerp(covariant ThemeExtension<AppColors>? other, double t) {
-    if (other is! AppColors) return this as AppColors;
-    return AppColors(
+  Colors lerp(covariant ThemeExtension<Colors>? other, double t) {
+    if (other is! Colors) return this as Colors;
+    return Colors(
       white: Color.lerp(white, other.white, t)!,
       background: Color.lerp(background, other.background, t)!,
       appBar: Color.lerp(appBar, other.appBar, t)!,
@@ -69,7 +69,7 @@ mixin _$AppColorsTailorMixin on ThemeExtension<AppColors> {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is AppColors &&
+            other is Colors &&
             const DeepCollectionEquality().equals(white, other.white) &&
             const DeepCollectionEquality().equals(
               background,
@@ -118,16 +118,16 @@ mixin _$AppColorsTailorMixin on ThemeExtension<AppColors> {
   }
 }
 
-extension AppColorsBuildContextProps on BuildContext {
-  AppColors get appColors => Theme.of(this).extension<AppColors>()!;
-  Color get white => appColors.white;
-  Color get background => appColors.background;
-  Color get appBar => appColors.appBar;
-  Color get brand => appColors.brand;
-  LinearGradient get brandGradient => appColors.brandGradient;
-  Color get activeButton => appColors.activeButton;
-  Color get inactiveButton => appColors.inactiveButton;
-  Color get error => appColors.error;
-  Color get textPrimary => appColors.textPrimary;
-  Color get textSecondary => appColors.textSecondary;
+extension ColorsBuildContextProps on BuildContext {
+  Colors get colors => Theme.of(this).extension<Colors>()!;
+  Color get white => colors.white;
+  Color get background => colors.background;
+  Color get appBar => colors.appBar;
+  Color get brand => colors.brand;
+  LinearGradient get brandGradient => colors.brandGradient;
+  Color get activeButton => colors.activeButton;
+  Color get inactiveButton => colors.inactiveButton;
+  Color get error => colors.error;
+  Color get textPrimary => colors.textPrimary;
+  Color get textSecondary => colors.textSecondary;
 }

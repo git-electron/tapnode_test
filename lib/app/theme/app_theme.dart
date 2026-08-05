@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Colors;
 
 import '../../gen/fonts.gen.dart';
 import 'app_colors.dart';
@@ -6,7 +6,7 @@ import 'app_text_styles.dart';
 
 abstract final class AppTheme {
   static ThemeData get light {
-    const colors = AppColors.light;
+    const colors = Colors.light;
 
     return ThemeData(
       useMaterial3: true,
@@ -25,7 +25,7 @@ abstract final class AppTheme {
         centerTitle: true,
         elevation: 0,
       ),
-      extensions: const [colors, AppTextStyles.light],
+      extensions: const [colors, Styles.light],
     );
   }
 }
