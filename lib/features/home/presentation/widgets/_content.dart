@@ -33,7 +33,28 @@ class _EmptyPlaceholder extends StatelessWidget {
             ),
           ),
           const Gap(18),
-          //add buttons here
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppGlassButton(
+                label: 'Files',
+                icon: Assets.images.files.image(),
+                onTap: () {},
+              ),
+              const Gap(12),
+              AppGlassButton(
+                label: 'Photos',
+                icon: Assets.images.gallery.image(),
+                onTap: () {},
+              ),
+            ],
+          ),
+          const Gap(12),
+          AppGlassButton(
+            label: 'Scanner',
+            icon: Assets.images.camera.image(),
+            onTap: () {},
+          ),
         ],
       ),
     );
