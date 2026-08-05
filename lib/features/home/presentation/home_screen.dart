@@ -1,10 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:liquid_glass_widgets/widgets/interactive/glass_icon_button.dart';
-import 'package:liquid_glass_widgets/widgets/shared/glass_page.dart';
-import 'package:liquid_glass_widgets/widgets/surfaces/glass_scaffold.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_text_styles.dart';
 import '../../../gen/assets.gen.dart';
@@ -27,7 +24,9 @@ class HomeScreen extends StatelessWidget {
             const _AppBar(),
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(36),
+                ),
                 child: ColoredBox(
                   color: context.colors.background,
                   child: ListView.builder(

@@ -27,24 +27,94 @@ class _AppBar extends StatelessWidget {
                 ),
                 Text(
                   'Signica',
-                  style: context.styles.logo.copyWith(color: context.colors.white),
+                  style: context.styles.logo.copyWith(
+                    color: context.colors.white,
+                  ),
                 ),
               ],
             ),
-            GlassIconButton(
-              size: 38,
-              borderRadius: 15.2,
-              shape: GlassIconButtonShape.roundedSquare,
-              icon: Icon(
-                CupertinoIcons.ellipsis,
-                color: context.colors.white,
-                size: 19.55,
+            GlassMenu(
+              glowColor: context.colors.white,
+              settings: const LiquidGlassSettings(
+                glassColor: Color(0xF2FFFFFF),
+                backerColor: Color(0xCCFFFFFF),
+                blur: 18,
+                thickness: 28,
+                whitenStrength: 0.75,
+                whitenGated: false,
+                shadow: [
+                  BoxShadow(
+                    color: Color(0x80FFFFFF),
+                    blurRadius: 44,
+                    spreadRadius: 8,
+                    offset: Offset(0, 18),
+                  ),
+                  BoxShadow(
+                    color: Color(0x59FFFFFF),
+                    blurRadius: 18,
+                    spreadRadius: 2,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
-              onPressed: () {},
+              menuWidth: 262,
+              menuHeight: 100,
+              menuBorderRadius: 34,
+              menuPadding: const Pad(vertical: 10, horizontal: 20, left: 20),
+              menuAlignment: GlassMenuAlignment.topRight,
+              items: const [
+                _AppMenuItem(
+                  title: 'Select',
+                  icon: CupertinoIcons.check_mark_circled,
+                ),
+                _AppMenuItem(
+                  title: 'Add Document',
+                  icon: CupertinoIcons.add_circled_solid,
+                ),
+              ],
+              triggerBuilder: (context, toggleMenu) {
+                return GlassIconButton(
+                  size: 38,
+                  borderRadius: 15.2,
+                  shape: GlassIconButtonShape.roundedSquare,
+                  icon: Icon(
+                    CupertinoIcons.ellipsis,
+                    color: context.colors.white,
+                    size: 19.55,
+                  ),
+                  semanticLabel: 'Open menu',
+                  onPressed: toggleMenu,
+                );
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AppMenuItem extends StatelessWidget {
+  const _AppMenuItem({
+    required this.title,
+    required this.icon,
+  });
+
+  final String title;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colors.textPrimary;
+
+    return GlassMenuItem(
+      title: title,
+      height: 40,
+      iconSize: 17,
+      iconColor: color,
+      titleStyle: context.styles.dropdownMenu,
+      icon: Icon(icon),
+      onTap: () {},
     );
   }
 }
