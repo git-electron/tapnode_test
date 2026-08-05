@@ -17,20 +17,11 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/camera.svg
-  SvgGenImage get camera => const SvgGenImage('assets/icons/camera.svg');
-
-  /// File path: assets/icons/files.svg
-  SvgGenImage get files => const SvgGenImage('assets/icons/files.svg');
-
-  /// File path: assets/icons/gallery.svg
-  SvgGenImage get gallery => const SvgGenImage('assets/icons/gallery.svg');
-
   /// File path: assets/icons/signed.svg
   SvgGenImage get signed => const SvgGenImage('assets/icons/signed.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [camera, files, gallery, signed];
+  List<SvgGenImage> get values => [signed];
 }
 
 class $AssetsImagesGen {
@@ -62,9 +53,23 @@ class $AssetsImagesGen {
   ];
 }
 
+class $AssetsLauncherGen {
+  const $AssetsLauncherGen();
+
+  /// File path: assets/launcher/icon.png
+  AssetGenImage get icon => const AssetGenImage('assets/launcher/icon.png');
+
+  /// File path: assets/launcher/splash.png
+  AssetGenImage get splash => const AssetGenImage('assets/launcher/splash.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [icon, splash];
+}
+
 abstract final class Assets {
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsLauncherGen launcher = $AssetsLauncherGen();
 }
 
 class AssetGenImage {

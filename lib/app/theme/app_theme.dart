@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide Colors;
 
 import '../../gen/fonts.gen.dart';
@@ -6,7 +7,35 @@ import 'app_text_styles.dart';
 import 'system_ui_overlay.dart';
 
 abstract final class AppTheme {
-  static ThemeData get light {
+  static CupertinoThemeData get light {
+    const colors = Colors.light;
+
+    return CupertinoThemeData(
+      brightness: Brightness.light,
+      primaryColor: colors.brand,
+      scaffoldBackgroundColor: colors.background,
+      barBackgroundColor: colors.appBar,
+      primaryContrastingColor: colors.white,
+      textTheme: CupertinoTextThemeData(
+        primaryColor: colors.textPrimary,
+        textStyle: TextStyle(
+          fontFamily: FontFamily.inter,
+          color: colors.textPrimary,
+          fontSize: 17,
+          letterSpacing: 0,
+        ),
+        navTitleTextStyle: TextStyle(
+          fontFamily: FontFamily.inter,
+          color: colors.white,
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0,
+        ),
+      ),
+    );
+  }
+
+  static ThemeData get materialLight {
     const colors = Colors.light;
 
     return ThemeData(

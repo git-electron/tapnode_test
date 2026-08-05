@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
@@ -16,7 +17,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return CupertinoApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Signica',
       theme: AppTheme.light,
@@ -24,7 +25,10 @@ class _AppState extends State<App> {
       builder: (context, child) {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: appSystemUiOverlayStyle,
-          child: child ?? const SizedBox.shrink(),
+          child: Theme(
+            data: AppTheme.materialLight,
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
       },
     );

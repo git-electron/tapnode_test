@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:liquid_glass_widgets/liquid_glass_setup.dart';
 import 'app/app.dart';
 import 'app/theme/system_ui_overlay.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await LiquidGlassWidgets.initialize();
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(appSystemUiOverlayStyle);
 
-  runApp(const App());
+  runApp(LiquidGlassWidgets.wrap(child: const App()));
 }
