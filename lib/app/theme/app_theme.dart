@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tapnode_test/app/theme/app_colors.dart';
-import 'package:tapnode_test/app/theme/app_text_styles.dart';
-import 'package:tapnode_test/gen/fonts.gen.dart';
+
+import '../../gen/fonts.gen.dart';
+import 'app_colors.dart';
+import 'app_text_styles.dart';
 
 abstract final class AppTheme {
   static ThemeData get light {
@@ -14,7 +15,6 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: colors.background,
       colorScheme: ColorScheme.fromSeed(
         seedColor: colors.brand,
-        brightness: Brightness.light,
         primary: colors.brand,
         error: colors.error,
         surface: colors.background,

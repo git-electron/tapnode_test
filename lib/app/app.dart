@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tapnode_test/app/router/app_router.dart';
-import 'package:tapnode_test/app/theme/app_theme.dart';
+import 'router/app_router.dart';
+import 'theme/app_theme.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -16,7 +16,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Tapnode',
+      title: 'Signica',
       theme: AppTheme.light,
       routerConfig: _appRouter.config(),
     );

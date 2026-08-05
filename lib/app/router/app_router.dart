@@ -1,5 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:tapnode_test/features/home/home_screen.dart';
+import '../../features/home/home_screen.dart';
 
 part 'app_router.gr.dart';
 

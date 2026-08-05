@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tapnode_test/gen/fonts.gen.dart';
 import 'package:theme_tailor_annotation/theme_tailor_annotation.dart';
+
+import '../../gen/fonts.gen.dart';
 
 part 'app_text_styles.tailor.dart';
 
