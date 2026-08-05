@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide Colors;
 import '../../gen/fonts.gen.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
+import 'system_ui_overlay.dart';
 
 abstract final class AppTheme {
   static ThemeData get light {
@@ -24,6 +25,7 @@ abstract final class AppTheme {
         foregroundColor: colors.white,
         centerTitle: true,
         elevation: 0,
+        systemOverlayStyle: appSystemUiOverlayStyle,
       ),
       extensions: const [colors, Styles.light],
     );
