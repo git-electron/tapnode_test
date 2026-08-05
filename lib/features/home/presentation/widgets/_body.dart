@@ -11,16 +11,14 @@ class _Body extends StatelessWidget {
       ),
       child: ColoredBox(
         color: context.colors.background,
-        child: Column(
+        child: const Column(
           children: [
             Expanded(
               child: Stack(
                 children: [
-                  ListView.builder(
-                    itemBuilder: (context, index) => Text(index.toString()),
-                  ),
-                  const _ContentScrollFade(),
-                  const _FiltersTabBar(),
+                  _Content(),
+                  _ContentScrollFade(),
+                  _FiltersTabBar(),
                 ],
               ),
             ),

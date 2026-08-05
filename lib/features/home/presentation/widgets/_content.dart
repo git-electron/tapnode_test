@@ -5,6 +5,37 @@ class _Content extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const _EmptyPlaceholder();
+  }
+}
+
+class _EmptyPlaceholder extends StatelessWidget {
+  const _EmptyPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.maxFinite,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Assets.images.emptyPlaceholder.image(height: 160),
+          const Gap(18),
+          Text(
+            'No Documents Yet',
+            style: context.styles.header1,
+          ),
+          const Gap(10),
+          Text(
+            'Your can add documents from',
+            style: context.styles.text1.copyWith(
+              color: const Color(0xff303030).withValues(alpha: .3),
+            ),
+          ),
+          const Gap(18),
+          //add buttons here
+        ],
+      ),
+    );
   }
 }
