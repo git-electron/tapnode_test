@@ -35,11 +35,21 @@ part 'widgets/content/widgets/_document_grid_item.dart';
 part 'widgets/content/widgets/_document_grid_menu.dart';
 part 'widgets/content/widgets/_document_menu_items.dart';
 part 'widgets/content/widgets/_documents_not_found_placeholder.dart';
-part 'widgets/floating_actions/widgets/_search_button.dart';
 part 'widgets/floating_actions/_floating_actions.dart';
 part 'widgets/floating_actions/widgets/_add_document_button.dart';
-part 'widgets/floating_actions/widgets/_add_document_popup_title.dart';
+part 'widgets/floating_actions/widgets/_add_document_button_content.dart';
+part 'widgets/floating_actions/widgets/_add_document_button_frame.dart';
+part 'widgets/floating_actions/widgets/_add_document_popup_action_button.dart';
+part 'widgets/floating_actions/widgets/_add_document_popup_action_model.dart';
 part 'widgets/floating_actions/widgets/_add_document_popup_actions.dart';
+part 'widgets/floating_actions/widgets/_add_document_popup_title.dart';
+part 'widgets/floating_actions/widgets/_floating_action_buttons.dart';
+part 'widgets/floating_actions/widgets/_floating_actions_backdrop.dart';
+part 'widgets/floating_actions/widgets/_search_button.dart';
+part 'widgets/floating_actions/widgets/_search_button_content.dart';
+part 'widgets/floating_actions/widgets/_search_button_frame.dart';
+part 'widgets/floating_actions/widgets/_search_button_layout.dart';
+part 'widgets/floating_actions/widgets/_search_text_field.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
