@@ -91,8 +91,7 @@ class DefaultDocumentImportService implements DocumentImportService {
       await importsDirectory.create(recursive: true);
     }
 
-    final outputPath =
-        '${importsDirectory.path}/${_importedPdfFileName(pdfPath)}';
+    final outputPath = _uniqueImportedPdfPath(importsDirectory, pdfPath);
 
     _logger.i('Document import: copying PDF to app storage: $outputPath');
     final copiedFile = await File(pdfPath).copy(outputPath);
@@ -133,8 +132,7 @@ class DefaultDocumentImportService implements DocumentImportService {
   }
 
   String _titleFromPath(String path) {
-    final normalizedPath = path.replaceAll(r'\', '/');
-    final fileName = normalizedPath.split('/').last;
+    final fileName = _fileNameFromPath(path);
     final extensionIndex = fileName.lastIndexOf('.');
 
     if (extensionIndex <= 0) return fileName;
@@ -142,12 +140,36 @@ class DefaultDocumentImportService implements DocumentImportService {
     return fileName.substring(0, extensionIndex);
   }
 
-  String _importedPdfFileName(String path) {
-    final title = _titleFromPath(path)
-        .replaceAll(RegExp(r'[^a-zA-Z0-9_-]+'), '_')
-        .replaceAll(RegExp(r'_+'), '_');
-    final timestamp = DateTime.now().microsecondsSinceEpoch;
+  String _uniqueImportedPdfPath(Directory directory, String sourcePath) {
+    final title = _titleFromPath(sourcePath).trim();
+    final baseName = title.isEmpty ? 'Document' : title;
+    final extension = _extensionFromPath(sourcePath);
+    var candidatePath = '${directory.path}/$baseName$extension';
 
-    return '${title}_$timestamp.pdf';
+    if (!File(candidatePath).existsSync()) return candidatePath;
+
+    var index = 2;
+    while (true) {
+      candidatePath = '${directory.path}/$baseName $index$extension';
+      if (!File(candidatePath).existsSync()) return candidatePath;
+      index++;
+    }
+  }
+
+  String _fileNameFromPath(String path) {
+    final normalizedPath = path.replaceAll(r'\', '/');
+
+    return normalizedPath.split('/').last;
+  }
+
+  String _extensionFromPath(String path) {
+    final fileName = _fileNameFromPath(path);
+    final extensionIndex = fileName.lastIndexOf('.');
+
+    if (extensionIndex <= 0 || extensionIndex == fileName.length - 1) {
+      return '.pdf';
+    }
+
+    return fileName.substring(extensionIndex);
   }
 }

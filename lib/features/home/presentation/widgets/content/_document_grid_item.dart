@@ -11,9 +11,15 @@ class _DocumentGridItem extends StatelessWidget {
       child: Column(
         children: [
           _Preview(document: document),
-          Gap(document.hasDoublePreviewImages ? 7 : 15),
-          Text(document.title),
-          Text(document.createdAt.formattedDate),
+          const Gap(15),
+          Text(document.title, style: context.styles.header3),
+          const Gap(4),
+          Text(
+            document.createdAt.formattedDate,
+            style: context.styles.text2.copyWith(
+              color: context.colors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -29,24 +35,29 @@ class _Preview extends StatelessWidget {
   Widget build(BuildContext context) {
     if (document.hasDoublePreviewImages) {
       return Stack(
+        clipBehavior: Clip.none,
         children: [
           _ImagePreview(path: document.firstPreviewImagePath!),
-          Transform.rotate(
-            angle: 7.35 * pi / 180,
-            child: _ImagePreview(path: document.lastPreviewImagePath!),
+          Positioned(
+            left: 12,
+            child: Transform.rotate(
+              angle: 7.35 * pi / 180,
+              child: _ImagePreview(path: document.lastPreviewImagePath!),
+            ),
           ),
         ],
       );
     }
     if (document.hasSinglePreviewImage) return _ImagePreview(path: document.firstPreviewImagePath!);
-    return const Placeholder();
+    return const _ImagePreview.broken();
   }
 }
 
 class _ImagePreview extends StatelessWidget {
   const _ImagePreview({required this.path});
+  const _ImagePreview.broken() : path = null;
 
-  final String path;
+  final String? path;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +65,7 @@ class _ImagePreview extends StatelessWidget {
       height: 167,
       width: 123,
       decoration: BoxDecoration(
+        color: context.colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -69,10 +81,12 @@ class _ImagePreview extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.file(
-          File(path),
-          fit: BoxFit.cover,
-        ),
+        child: path != null
+            ? Image.file(
+                File(path!),
+                fit: BoxFit.cover,
+              )
+            : const Icon(CupertinoIcons.exclamationmark_triangle),
       ),
     );
   }
