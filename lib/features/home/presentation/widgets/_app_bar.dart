@@ -56,15 +56,28 @@ class _Logo extends StatelessWidget {
   }
 }
 
-class _DropdownMenuButton extends StatelessWidget {
+class _DropdownMenuButton extends StatefulWidget {
   const _DropdownMenuButton();
+
+  @override
+  State<_DropdownMenuButton> createState() => _DropdownMenuButtonState();
+}
+
+class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
+  late final GlassMenuController _menuController;
+
+  @override
+  void initState() {
+    super.initState();
+    _menuController = GlassMenuController();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GlassMenu(
+      controller: _menuController,
       glowColor: context.colors.white,
       enableInteractionGlow: false,
-
       selectionColor: const Color(0x14000000),
       settings: LiquidGlassSettings(
         glassColor: const Color(0xF2FFFFFF),
@@ -95,7 +108,7 @@ class _DropdownMenuButton extends StatelessWidget {
       menuAlignment: GlassMenuAlignment.topRight,
       items: [
         _DropdownMenuItem(
-          onTap: () {},
+          onTap: _closeMenu,
           title: 'Select',
           icon: CupertinoIcons.check_mark_circled,
         ),
@@ -104,6 +117,7 @@ class _DropdownMenuButton extends StatelessWidget {
             context.read<FloatingActionsBloc>().add(
               const FloatingActionsEvent.openAddDocumentsPopup(),
             );
+            _closeMenu();
           },
           title: 'Add Document',
           icon: CupertinoIcons.add_circled_solid,
@@ -125,6 +139,13 @@ class _DropdownMenuButton extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _closeMenu() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _menuController.close();
+    });
   }
 }
 
