@@ -138,7 +138,9 @@ class _AddDocumentButton extends StatelessWidget {
   }
 
   FloatingActionsEvent _eventFor(FloatingActionsState state) {
-    if (state.isSearchOpen) return const FloatingActionsEvent.closeSearch();
+    if (state.isSearchOpen) {
+      return const FloatingActionsEvent.clearSearchAndClose();
+    }
     if (state.isAddDocumentsPopupOpen) {
       return const FloatingActionsEvent.closeAddDocumentsPopup();
     }

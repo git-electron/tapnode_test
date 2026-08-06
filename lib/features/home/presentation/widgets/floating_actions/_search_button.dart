@@ -40,135 +40,165 @@ class _SearchButtonState extends State<_SearchButton> {
         if (state.isSearchOpen) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
+            if (!context.read<FloatingActionsBloc>().state.isSearchOpen) {
+              return;
+            }
             _focusNode.requestFocus();
           });
         } else {
           _focusNode.unfocus();
         }
       },
-      child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
-        builder: (context, state) {
-          return Expanded(
-            child: IgnorePointer(
-              ignoring: state.isAddDocumentsPopupOpen,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return TweenAnimationBuilder<double>(
-                    tween: Tween(end: _targetProgress(state)),
-                    duration: _animationDuration,
-                    curve: Curves.easeOutExpo,
-                    builder: (context, progress, child) {
-                      final searchProgress = progress.clamp(0.0, 1.0);
-                      final visibilityProgress = (progress + 1).clamp(
-                        0.0,
-                        1.0,
-                      );
-                      final width = _lerp(
-                        _collapsedSize,
-                        constraints.maxWidth,
-                        searchProgress,
-                      );
-                      final height = _lerp(
-                        _collapsedSize,
-                        _expandedHeight,
-                        searchProgress,
-                      );
+      child: BlocListener<FloatingActionsBloc, FloatingActionsState>(
+        listenWhen: (previous, current) => previous.searchText != current.searchText,
+        listener: (context, state) {
+          if (_controller.text == state.searchText) return;
 
-                      return Opacity(
-                        opacity: visibilityProgress,
-                        child: Transform.scale(
-                          scale: _lerp(.88, 1, visibilityProgress),
-                          alignment: Alignment.centerLeft,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: GlassButton.custom(
-                              height: height,
-                              width: width,
-                              label: 'Search',
-                              onTap: () {
-                                if (state.isSearchOpen) {
-                                  _focusNode.requestFocus();
-                                  return;
-                                }
-
-                                context.read<FloatingActionsBloc>().add(
-                                  const FloatingActionsEvent.openSearch(),
-                                );
-                              },
-                              shape: const LiquidRoundedRectangle(
-                                borderRadius: 100,
-                              ),
-                              interactionScale: .97,
-                              stretch: .28,
-                              resistance: .04,
-                              glowColor: context.colors.white,
-                              glowRadius: 1.2,
-                              glowOpacity: .3,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: _lerp(
-                                      _collapsedSize,
-                                      _leftPadding + _iconSize,
-                                      searchProgress,
-                                    ),
-                                    height: _collapsedSize,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                        left: _leftPadding * searchProgress,
-                                      ),
-                                      child: Align(
-                                        alignment: Alignment.lerp(
-                                          Alignment.center,
-                                          Alignment.centerLeft,
-                                          searchProgress,
-                                        )!,
-                                        child: Icon(
-                                          CupertinoIcons.search,
-                                          size: _iconSize,
-                                          color: context.colors.textPrimary,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: _iconTextGap * searchProgress,
-                                  ),
-                                  Expanded(
-                                    child: Opacity(
-                                      opacity: searchProgress,
-                                      child: CupertinoTextField(
-                                        controller: _controller,
-                                        focusNode: _focusNode,
-                                        placeholder: 'Search Documents',
-                                        padding: EdgeInsets.zero,
-                                        decoration: const BoxDecoration(),
-                                        style: context.styles.text1.copyWith(
-                                          color: context.colors.textPrimary,
-                                        ),
-                                        cursorColor: const Color(0xff0088FF),
-                                        onEditingComplete: () => context.read<FloatingActionsBloc>().add(
-                                          const FloatingActionsEvent.closeSearch(),
-                                        ),
-                                        placeholderStyle: context.styles.text1.copyWith(
-                                          color: context.colors.textSecondary.withValues(alpha: .35),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+          _controller.value = TextEditingValue(
+            text: state.searchText,
+            selection: TextSelection.collapsed(
+              offset: state.searchText.length,
             ),
           );
         },
+        child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
+          builder: (context, state) {
+            return Expanded(
+              child: IgnorePointer(
+                ignoring: state.isAddDocumentsPopupOpen,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return TweenAnimationBuilder<double>(
+                      tween: Tween(end: _targetProgress(state)),
+                      duration: _animationDuration,
+                      curve: Curves.easeOutExpo,
+                      builder: (context, progress, child) {
+                        final searchProgress = progress.clamp(0.0, 1.0);
+                        final visibilityProgress = (progress + 1).clamp(
+                          0.0,
+                          1.0,
+                        );
+                        final width = _lerp(
+                          _collapsedSize,
+                          constraints.maxWidth,
+                          searchProgress,
+                        );
+                        final height = _lerp(
+                          _collapsedSize,
+                          _expandedHeight,
+                          searchProgress,
+                        );
+
+                        return Opacity(
+                          opacity: visibilityProgress,
+                          child: Transform.scale(
+                            scale: _lerp(.88, 1, visibilityProgress),
+                            alignment: Alignment.centerLeft,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: GlassButton.custom(
+                                height: height,
+                                width: width,
+                                label: 'Search',
+                                onTap: () {
+                                  if (state.isSearchOpen) {
+                                    _focusNode.requestFocus();
+                                    return;
+                                  }
+
+                                  context.read<FloatingActionsBloc>().add(
+                                    const FloatingActionsEvent.openSearch(),
+                                  );
+                                },
+                                shape: const LiquidRoundedRectangle(
+                                  borderRadius: 100,
+                                ),
+                                interactionScale: .97,
+                                stretch: .28,
+                                resistance: .04,
+                                glowColor: context.colors.white,
+                                glowRadius: 1.2,
+                                glowOpacity: .3,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: _lerp(
+                                        _collapsedSize,
+                                        _leftPadding + _iconSize,
+                                        searchProgress,
+                                      ),
+                                      height: _collapsedSize,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          left: _leftPadding * searchProgress,
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.lerp(
+                                            Alignment.center,
+                                            Alignment.centerLeft,
+                                            searchProgress,
+                                          )!,
+                                          child: Icon(
+                                            CupertinoIcons.search,
+                                            size: _iconSize,
+                                            color: context.colors.textPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: _iconTextGap * searchProgress,
+                                    ),
+                                    Expanded(
+                                      child: Opacity(
+                                        opacity: searchProgress,
+                                        child: CupertinoTextField(
+                                          controller: _controller,
+                                          focusNode: _focusNode,
+                                          placeholder: 'Search Documents',
+                                          padding: EdgeInsets.zero,
+                                          decoration: const BoxDecoration(),
+                                          style: context.styles.text1.copyWith(
+                                            color: context.colors.textPrimary,
+                                          ),
+                                          cursorColor: const Color(0xff0088FF),
+                                          onChanged: (text) {
+                                            context.read<FloatingActionsBloc>().add(
+                                              FloatingActionsEvent.searchTextChanged(
+                                                text,
+                                              ),
+                                            );
+                                          },
+                                          onEditingComplete: () {
+                                            if (_controller.text.isNotEmpty) {
+                                              _focusNode.unfocus();
+                                              return;
+                                            }
+
+                                            context.read<FloatingActionsBloc>().add(
+                                              const FloatingActionsEvent.closeSearch(),
+                                            );
+                                          },
+                                          placeholderStyle: context.styles.text1.copyWith(
+                                            color: context.colors.textSecondary.withValues(alpha: .35),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

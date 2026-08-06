@@ -28,6 +28,15 @@ class FloatingActionsBloc
           );
         case _CloseSearch():
           emit(state.copyWith(isSearchOpen: false));
+        case _SearchTextChanged(:final text):
+          emit(state.copyWith(searchText: text));
+        case _ClearSearchAndClose():
+          emit(
+            state.copyWith(
+              isSearchOpen: false,
+              searchText: '',
+            ),
+          );
       }
     });
   }

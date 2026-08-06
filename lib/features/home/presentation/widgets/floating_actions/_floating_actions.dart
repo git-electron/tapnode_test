@@ -54,10 +54,20 @@ class _FloatingActionsBackdrop extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
+                if (state.isAddDocumentsPopupOpen) {
+                  context.read<FloatingActionsBloc>().add(
+                    const FloatingActionsEvent.closeAddDocumentsPopup(),
+                  );
+                  return;
+                }
+
+                if (state.searchText.isNotEmpty) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  return;
+                }
+
                 context.read<FloatingActionsBloc>().add(
-                  state.isAddDocumentsPopupOpen
-                      ? const FloatingActionsEvent.closeAddDocumentsPopup()
-                      : const FloatingActionsEvent.closeSearch(),
+                  const FloatingActionsEvent.closeSearch(),
                 );
               },
               child: TweenAnimationBuilder<double>(
