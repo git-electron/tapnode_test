@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../domain/model/document_model.dart';
 import '../database/home_database.dart';
@@ -9,6 +10,7 @@ abstract interface class DocumentsRepository {
   Future<DocumentModel> addDocument(DocumentModel document);
 }
 
+@LazySingleton(as: DocumentsRepository)
 class DriftDocumentsRepository implements DocumentsRepository {
   const DriftDocumentsRepository(this._database);
 

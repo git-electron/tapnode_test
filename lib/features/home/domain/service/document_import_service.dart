@@ -1,3 +1,5 @@
+import 'package:injectable/injectable.dart';
+
 import '../model/document_model.dart';
 
 abstract interface class DocumentImportService {
@@ -8,6 +10,7 @@ abstract interface class DocumentImportService {
   Future<DocumentImportDraft?> scanWithCunningDocumentScanner();
 }
 
+@LazySingleton(as: DocumentImportService)
 class StubDocumentImportService implements DocumentImportService {
   const StubDocumentImportService();
 

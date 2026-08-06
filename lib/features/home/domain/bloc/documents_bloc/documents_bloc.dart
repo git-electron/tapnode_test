@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../data/repository/documents_repository.dart';
 import '../../model/document_model.dart';
@@ -11,6 +12,7 @@ part 'documents_event.dart';
 part 'documents_state.dart';
 part 'documents_bloc.freezed.dart';
 
+@injectable
 class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   DocumentsBloc({
     required DocumentsRepository repository,
@@ -149,7 +151,9 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     String? searchQuery,
   }) {
     final effectiveFilter = filter ?? state.filter;
-    final effectiveSearchQuery = (searchQuery ?? state.searchQuery).trim().toLowerCase();
+    final effectiveSearchQuery = (searchQuery ?? state.searchQuery)
+        .trim()
+        .toLowerCase();
 
     return _allDocuments
         .where((document) {
@@ -159,7 +163,8 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
             DocumentsFilter.unsigned => !document.isSigned,
           };
           final matchesSearch =
-              effectiveSearchQuery.isEmpty || document.title.toLowerCase().contains(effectiveSearchQuery);
+              effectiveSearchQuery.isEmpty ||
+              document.title.toLowerCase().contains(effectiveSearchQuery);
 
           return matchesFilter && matchesSearch;
         })
