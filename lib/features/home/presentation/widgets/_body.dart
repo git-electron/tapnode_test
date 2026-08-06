@@ -54,7 +54,7 @@ class _ContentScrollFade extends StatelessWidget {
       left: 0,
       right: 0,
       child: SizedBox(
-        height: 100,
+        height: 80,
         width: double.maxFinite,
         child: DecoratedBox(
           decoration: BoxDecoration(
