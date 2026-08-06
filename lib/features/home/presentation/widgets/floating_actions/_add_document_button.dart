@@ -11,12 +11,20 @@ class _AddDocumentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
-      builder: (context, state) {
-        return _AddDocumentButtonAnimator(
-          state: state,
-          onTap: () {
-            _handleTap(context, state);
+    return BlocBuilder<DocumentsBloc, DocumentsState>(
+      buildWhen: (previous, current) =>
+          previous.selectionMode != current.selectionMode,
+      builder: (context, documentsState) {
+        return BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
+          builder: (context, state) {
+            return _AddDocumentButtonAnimator(
+              state: state,
+              selectionMode: documentsState.selectionMode,
+              onTap: () {
+                if (documentsState.selectionMode) return;
+                _handleTap(context, state);
+              },
+            );
           },
         );
       },
@@ -49,10 +57,12 @@ class _AddDocumentButton extends StatelessWidget {
 class _AddDocumentButtonAnimator extends StatelessWidget {
   const _AddDocumentButtonAnimator({
     required this.state,
+    required this.selectionMode,
     required this.onTap,
   });
 
   final FloatingActionsState state;
+  final bool selectionMode;
   final VoidCallback onTap;
 
   @override
@@ -76,6 +86,7 @@ class _AddDocumentButtonAnimator extends StatelessWidget {
                   width: width,
                   height: height,
                   progress: progress,
+                  selectionMode: selectionMode,
                   onTap: onTap,
                 );
               },
@@ -87,17 +98,20 @@ class _AddDocumentButtonAnimator extends StatelessWidget {
   }
 
   double _targetWidth(FloatingActionsState state) {
+    if (selectionMode) return _AddDocumentButton.collapsedWidth;
     if (state.isSearchOpen) return _AddDocumentButton.searchCloseSize;
     if (state.isAddDocumentsPopupOpen) return _AddDocumentButton.collapsedWidth;
     return _AddDocumentButton.expandedWidth;
   }
 
   double _targetHeight(FloatingActionsState state) {
+    if (selectionMode) return _AddDocumentButton.collapsedWidth;
     if (state.isSearchOpen) return _AddDocumentButton.searchCloseSize;
     return _AddDocumentButton.height;
   }
 
   double _activeProgress(FloatingActionsState state) {
+    if (selectionMode) return 1;
     return state.isSearchOpen || state.isAddDocumentsPopupOpen ? 1 : 0;
   }
 }
@@ -107,12 +121,14 @@ class _AddDocumentGlassButton extends StatelessWidget {
     required this.width,
     required this.height,
     required this.progress,
+    required this.selectionMode,
     required this.onTap,
   });
 
   final double width;
   final double height;
   final double progress;
+  final bool selectionMode;
   final VoidCallback onTap;
 
   @override
@@ -135,7 +151,10 @@ class _AddDocumentGlassButton extends StatelessWidget {
       glowColor: context.colors.white,
       glowRadius: 1.2,
       glowOpacity: _addDocumentLerp(.1, .3, progress),
-      child: _AddDocumentButtonContent(progress: progress),
+      child: _AddDocumentButtonContent(
+        progress: progress,
+        selectionMode: selectionMode,
+      ),
     );
   }
 
@@ -158,9 +177,11 @@ class _AddDocumentGlassButton extends StatelessWidget {
 class _AddDocumentButtonContent extends StatelessWidget {
   const _AddDocumentButtonContent({
     required this.progress,
+    required this.selectionMode,
   });
 
   final double progress;
+  final bool selectionMode;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +194,9 @@ class _AddDocumentButtonContent extends StatelessWidget {
         ),
         Opacity(
           opacity: progress,
-          child: const _AddDocumentCloseIcon(),
+          child: selectionMode
+              ? const _AddDocumentShareIcon()
+              : const _AddDocumentCloseIcon(),
         ),
       ],
     );
@@ -218,6 +241,18 @@ class _AddDocumentCloseIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Icon(
       CupertinoIcons.xmark,
+      size: 29,
+    );
+  }
+}
+
+class _AddDocumentShareIcon extends StatelessWidget {
+  const _AddDocumentShareIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      CupertinoIcons.share,
       size: 29,
     );
   }

@@ -34,6 +34,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     on<_DeselectAll>(_onDeselectAll);
     on<_DocumentSignedToggled>(_onDocumentSignedToggled);
     on<_DeleteRequested>(_onDeleteRequested);
+    on<_SelectedDeleteRequested>(_onSelectedDeleteRequested);
     // TODO: remove
     on<_DeleteAllRequested>(_onDeleteAllRequested);
     on<_ImportFromFilesRequested>(_onImportFromFilesRequested);
@@ -203,6 +204,42 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     } on Object catch (error, stackTrace) {
       _logger.e(
         'Documents bloc: delete failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      emit(
+        state.copyWith(
+          loading: false,
+          error: error.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onSelectedDeleteRequested(
+    _SelectedDeleteRequested event,
+    Emitter<DocumentsState> emit,
+  ) async {
+    final ids = state.selectedIds.toList(growable: false);
+    if (ids.isEmpty) return;
+
+    emit(state.copyWith(loading: true, error: null));
+
+    try {
+      for (final id in ids) {
+        await _repository.deleteDocument(id);
+      }
+
+      emit(
+        state.copyWith(
+          loading: false,
+          selectionMode: false,
+          selectedIds: const {},
+        ),
+      );
+    } on Object catch (error, stackTrace) {
+      _logger.e(
+        'Documents bloc: delete selected failed',
         error: error,
         stackTrace: stackTrace,
       );

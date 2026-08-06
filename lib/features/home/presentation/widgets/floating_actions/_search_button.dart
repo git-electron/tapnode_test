@@ -34,25 +34,33 @@ class _SearchButtonState extends State<_SearchButton> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<FloatingActionsBloc, FloatingActionsState>(
-      listenWhen: (previous, current) =>
-          previous.isSearchOpen != current.isSearchOpen,
-      listener: _handleSearchOpenChanged,
-      child: BlocListener<DocumentsBloc, DocumentsState>(
-        listenWhen: (previous, current) =>
-            previous.searchQuery != current.searchQuery,
-        listener: _syncControllerText,
-        child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
-          builder: (context, state) {
-            return _SearchButtonLayout(
-              state: state,
-              controller: _controller,
-              focusNode: _focusNode,
-              onTap: () => _handleTap(context, state),
-            );
-          },
-        ),
-      ),
+    return BlocBuilder<DocumentsBloc, DocumentsState>(
+      buildWhen: (previous, current) =>
+          previous.selectionMode != current.selectionMode ||
+          previous.searchQuery != current.searchQuery,
+      builder: (context, documentsState) {
+        return BlocListener<FloatingActionsBloc, FloatingActionsState>(
+          listenWhen: (previous, current) =>
+              previous.isSearchOpen != current.isSearchOpen,
+          listener: _handleSearchOpenChanged,
+          child: BlocListener<DocumentsBloc, DocumentsState>(
+            listenWhen: (previous, current) =>
+                previous.searchQuery != current.searchQuery,
+            listener: _syncControllerText,
+            child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
+              builder: (context, state) {
+                return _SearchButtonLayout(
+                  state: state,
+                  selectionMode: documentsState.selectionMode,
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  onTap: () => _handleTap(context, state),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -102,12 +110,14 @@ class _SearchButtonState extends State<_SearchButton> {
 class _SearchButtonLayout extends StatelessWidget {
   const _SearchButtonLayout({
     required this.state,
+    required this.selectionMode,
     required this.controller,
     required this.focusNode,
     required this.onTap,
   });
 
   final FloatingActionsState state;
+  final bool selectionMode;
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onTap;
@@ -127,9 +137,16 @@ class _SearchButtonLayout extends StatelessWidget {
                 return _AnimatedSearchButtonFrame(
                   progress: progress,
                   maxWidth: constraints.maxWidth,
-                  onTap: onTap,
+                  onTap: selectionMode
+                      ? () {
+                          context.read<DocumentsBloc>().add(
+                            const DocumentsEvent.selectedDeleteRequested(),
+                          );
+                        }
+                      : onTap,
                   child: _SearchButtonContent(
                     progress: progress.clamp(0.0, 1.0),
+                    selectionMode: selectionMode,
                     controller: controller,
                     focusNode: focusNode,
                   ),
@@ -144,6 +161,7 @@ class _SearchButtonLayout extends StatelessWidget {
 
   double _targetProgress(FloatingActionsState state) {
     if (state.isAddDocumentsPopupOpen) return -1;
+    if (selectionMode) return 0;
     if (state.isSearchOpen) return 1;
     return 0;
   }
@@ -207,11 +225,13 @@ class _AnimatedSearchButtonFrame extends StatelessWidget {
 class _SearchButtonContent extends StatelessWidget {
   const _SearchButtonContent({
     required this.progress,
+    required this.selectionMode,
     required this.controller,
     required this.focusNode,
   });
 
   final double progress;
+  final bool selectionMode;
   final TextEditingController controller;
   final FocusNode focusNode;
 
@@ -219,7 +239,10 @@ class _SearchButtonContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _SearchButtonIcon(progress: progress),
+        _SearchButtonIcon(
+          progress: progress,
+          selectionMode: selectionMode,
+        ),
         SizedBox(width: _SearchButton.iconTextGap * progress),
         Expanded(
           child: Opacity(
@@ -238,9 +261,11 @@ class _SearchButtonContent extends StatelessWidget {
 class _SearchButtonIcon extends StatelessWidget {
   const _SearchButtonIcon({
     required this.progress,
+    required this.selectionMode,
   });
 
   final double progress;
+  final bool selectionMode;
 
   @override
   Widget build(BuildContext context) {
@@ -259,10 +284,18 @@ class _SearchButtonIcon extends StatelessWidget {
             Alignment.centerLeft,
             progress,
           )!,
-          child: Icon(
-            CupertinoIcons.search,
-            size: _SearchButton.iconSize,
-            color: context.colors.textPrimary,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            child: Icon(
+              selectionMode ? CupertinoIcons.delete : CupertinoIcons.search,
+              key: ValueKey(selectionMode),
+              size: _SearchButton.iconSize,
+              color: selectionMode
+                  ? context.colors.error
+                  : context.colors.textPrimary,
+            ),
           ),
         ),
       ),
@@ -299,6 +332,9 @@ class _SearchTextField extends StatelessWidget {
         context.read<DocumentsBloc>().add(
           DocumentsEvent.searchChanged(text),
         );
+      },
+      onTapOutside: (event) {
+        focusNode.unfocus();
       },
       onEditingComplete: () {
         if (controller.text.isNotEmpty) {
