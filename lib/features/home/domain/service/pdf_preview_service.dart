@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 
@@ -10,19 +11,26 @@ abstract interface class PdfPreviewService {
 
 @LazySingleton(as: PdfPreviewService)
 class PdfxPreviewService implements PdfPreviewService {
-  const PdfxPreviewService();
+  const PdfxPreviewService(this._logger);
 
+  final Logger _logger;
   static const _renderWidth = 512.0;
 
   @override
   Future<List<String>> generateForPdf(String pdfPath) async {
+    _logger.i('PDF preview: opening document: $pdfPath');
     final document = await PdfDocument.openFile(pdfPath);
 
     try {
       final pagesCount = document.pagesCount;
-      if (pagesCount <= 0) return const [];
+      _logger.i('PDF preview: pages count: $pagesCount');
+      if (pagesCount <= 0) {
+        _logger.w('PDF preview: document has no pages: $pdfPath');
+        return const [];
+      }
 
       final previewDirectory = await _previewDirectory();
+      _logger.i('PDF preview: output directory: ${previewDirectory.path}');
       final firstPagePath = await _renderPage(
         document: document,
         pageNumber: 1,
@@ -30,7 +38,10 @@ class PdfxPreviewService implements PdfPreviewService {
         pdfPath: pdfPath,
       );
 
-      if (pagesCount == 1) return [firstPagePath];
+      if (pagesCount == 1) {
+        _logger.i('PDF preview: single-page PDF, generated: $firstPagePath');
+        return [firstPagePath];
+      }
 
       final lastPagePath = await _renderPage(
         document: document,
@@ -39,9 +50,12 @@ class PdfxPreviewService implements PdfPreviewService {
         pdfPath: pdfPath,
       );
 
-      return [firstPagePath, lastPagePath];
+      final previewPaths = [firstPagePath, lastPagePath];
+      _logger.i('PDF preview: generated previews: $previewPaths');
+      return previewPaths;
     } finally {
       await document.close();
+      _logger.i('PDF preview: closed document: $pdfPath');
     }
   }
 
@@ -64,23 +78,40 @@ class PdfxPreviewService implements PdfPreviewService {
     required Directory outputDirectory,
     required String pdfPath,
   }) async {
+    _logger.i('PDF preview: rendering page $pageNumber');
     final page = await document.getPage(pageNumber);
 
     try {
       final scale = _renderWidth / page.width;
+      final renderHeight = page.height * scale;
+      _logger.i(
+        'PDF preview: page $pageNumber size ${page.width}x${page.height}, '
+        'render ${_renderWidth}x$renderHeight',
+      );
       final image = await page.render(
         width: _renderWidth,
-        height: page.height * scale,
+        height: renderHeight,
         backgroundColor: '#FFFFFF',
       );
       final outputPath =
           '${outputDirectory.path}/${_fileName(pdfPath, pageNumber)}.jpg';
 
-      await File(outputPath).writeAsBytes(image!.bytes, flush: true);
+      if (image == null) {
+        throw StateError(
+          'PDF preview render returned null for page $pageNumber',
+        );
+      }
+
+      await File(outputPath).writeAsBytes(image.bytes, flush: true);
+      _logger.i(
+        'PDF preview: wrote page $pageNumber preview '
+        '(${image.bytes.length} bytes): $outputPath',
+      );
 
       return outputPath;
     } finally {
       await page.close();
+      _logger.i('PDF preview: closed page $pageNumber');
     }
   }
 

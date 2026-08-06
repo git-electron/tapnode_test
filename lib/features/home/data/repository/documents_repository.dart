@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 
 import '../../domain/model/document_model.dart';
 import '../database/home_database.dart';
@@ -15,9 +16,13 @@ abstract interface class DocumentsRepository {
 
 @LazySingleton(as: DocumentsRepository)
 class DriftDocumentsRepository implements DocumentsRepository {
-  const DriftDocumentsRepository(this._database);
+  const DriftDocumentsRepository(
+    this._database,
+    this._logger,
+  );
 
   final HomeDatabase _database;
+  final Logger _logger;
 
   @override
   Stream<List<DocumentModel>> watchDocuments() {
@@ -33,6 +38,11 @@ class DriftDocumentsRepository implements DocumentsRepository {
 
   @override
   Future<DocumentModel> addDocument(DocumentModel document) async {
+    _logger.i(
+      'Documents repository: inserting document '
+      'title=${document.title}, filePath=${document.filePath}, '
+      'previews=${document.previewImagePaths.length}',
+    );
     final id = await _database
         .into(_database.documents)
         .insert(
@@ -48,6 +58,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
           ),
         );
 
+    _logger.i('Documents repository: inserted document id=$id');
     return document.copyWith(id: id);
   }
 

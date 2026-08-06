@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 
 import '../../../data/repository/documents_repository.dart';
 import '../../model/document_model.dart';
@@ -17,8 +18,10 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   DocumentsBloc({
     required DocumentsRepository repository,
     required DocumentImportService importService,
+    required Logger logger,
   }) : _repository = repository,
        _importService = importService,
+       _logger = logger,
        super(const DocumentsState()) {
     on<_Started>(_onStarted);
     on<_DocumentsChanged>(_onDocumentsChanged);
@@ -38,6 +41,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
 
   final DocumentsRepository _repository;
   final DocumentImportService _importService;
+  final Logger _logger;
 
   StreamSubscription<List<DocumentModel>>? _subscription;
   List<DocumentModel> _allDocuments = const [];
@@ -218,18 +222,31 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     Emitter<DocumentsState> emit,
     Future<DocumentImportDraft?> Function() importDocument,
   ) async {
+    _logger.i('Documents bloc: import started');
     emit(state.copyWith(loading: true, error: null));
 
     try {
       final draft = await importDocument();
       if (draft == null) {
+        _logger.i('Documents bloc: import cancelled');
         emit(state.copyWith(loading: false));
         return;
       }
 
+      _logger.i(
+        'Documents bloc: import draft ready '
+        'title=${draft.title}, filePath=${draft.filePath}, '
+        'previews=${draft.previewImagePaths.length}',
+      );
       await _repository.addDocument(draft.toDocumentModel());
+      _logger.i('Documents bloc: import completed');
       emit(state.copyWith(loading: false));
-    } on Object catch (error) {
+    } on Object catch (error, stackTrace) {
+      _logger.e(
+        'Documents bloc: import failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
       emit(
         state.copyWith(
           loading: false,
