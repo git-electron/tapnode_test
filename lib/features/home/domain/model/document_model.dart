@@ -31,6 +31,22 @@ abstract class DocumentModel extends Equatable with _$DocumentModel {
     @Default([]) List<String> previewImagePaths,
   }) = _DocumentModel;
 
+  String? get firstPreviewImagePath {
+    if (previewImagePaths.isEmpty) return null;
+
+    return previewImagePaths.first;
+  }
+
+  String? get lastPreviewImagePath {
+    if (previewImagePaths.length < 2) return null;
+
+    return previewImagePaths.last;
+  }
+
+  bool get hasSinglePreviewImage => previewImagePaths.length == 1;
+
+  bool get hasDoublePreviewImages => previewImagePaths.length >= 2;
+
   @override
   List<Object?> get props => [
     id,
