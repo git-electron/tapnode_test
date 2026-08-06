@@ -1,9 +1,15 @@
 part of '../../home_screen.dart';
 
 class _DocumentsList extends StatefulWidget {
-  const _DocumentsList({required this.documents});
+  const _DocumentsList({
+    required this.documents,
+    required this.selectionMode,
+    required this.selectedIds,
+  });
 
   final List<DocumentModel> documents;
+  final bool selectionMode;
+  final Set<int> selectedIds;
 
   @override
   State<_DocumentsList> createState() => _DocumentsListState();
@@ -41,6 +47,8 @@ class _DocumentsListState extends State<_DocumentsList> {
           opacity: shouldFade ? .2 : 1,
           child: _DocumentGridMenu(
             document: document,
+            selectionMode: widget.selectionMode,
+            isSelected: widget.selectedIds.contains(document.id),
             onOpen: () => _setActiveMenuDocumentId(document.id),
             onClose: () {
               if (_activeMenuDocumentId != document.id) return;

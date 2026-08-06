@@ -3,11 +3,15 @@ part of '../../home_screen.dart';
 class _DocumentGridMenu extends StatefulWidget {
   const _DocumentGridMenu({
     required this.document,
+    required this.selectionMode,
+    required this.isSelected,
     required this.onOpen,
     required this.onClose,
   });
 
   final DocumentModel document;
+  final bool selectionMode;
+  final bool isSelected;
   final VoidCallback onOpen;
   final VoidCallback onClose;
 
@@ -82,9 +86,12 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
           ),
         ),
         Tappable(
-          onTap: _toggleSigned,
-          onLongTap: _openMenu,
-          child: _DocumentGridItem(document: widget.document),
+          onTap: _handleTap,
+          onLongTap: widget.selectionMode ? null : _openMenu,
+          child: _DocumentGridItem(
+            document: widget.document,
+            isSelected: widget.isSelected,
+          ),
         ),
       ],
     );
@@ -164,7 +171,14 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
     _closeMenu();
   }
 
-  void _toggleSigned() {
+  void _handleTap() {
+    if (widget.selectionMode) {
+      context.read<DocumentsBloc>().add(
+        DocumentsEvent.documentSelectionToggled(widget.document.id),
+      );
+      return;
+    }
+
     context.read<DocumentsBloc>().add(
       DocumentsEvent.documentSignedToggled(widget.document.id),
     );

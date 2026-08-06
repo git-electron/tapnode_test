@@ -1,9 +1,13 @@
 part of '../../home_screen.dart';
 
 class _DocumentGridItem extends StatelessWidget {
-  const _DocumentGridItem({required this.document});
+  const _DocumentGridItem({
+    required this.document,
+    required this.isSelected,
+  });
 
   final DocumentModel document;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +32,11 @@ class _DocumentGridItem extends StatelessWidget {
                   Positioned(
                     bottom: -10,
                     child: _SignedMark(visible: document.isSigned),
+                  ),
+                  Positioned(
+                    top: 8,
+                    right: 12,
+                    child: _SelectionMark(visible: isSelected),
                   ),
                 ],
               ),
@@ -61,6 +70,51 @@ class _DocumentGridItem extends StatelessWidget {
       context: context,
       title: document.title,
       maxWidth: maxWidth,
+    );
+  }
+}
+
+class _SelectionMark extends StatelessWidget {
+  const _SelectionMark({required this.visible});
+
+  final bool visible;
+
+  static const _duration = Duration(milliseconds: 180);
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        duration: _duration,
+        curve: Curves.easeOutCubic,
+        opacity: visible ? 1 : 0,
+        child: AnimatedScale(
+          duration: _duration,
+          curve: Curves.easeOutBack,
+          scale: visible ? 1 : .72,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: context.colors.brand,
+              boxShadow: [
+                BoxShadow(
+                  color: context.colors.black.withValues(alpha: .12),
+                  blurRadius: 9,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: SizedBox.square(
+              dimension: 28,
+              child: Icon(
+                CupertinoIcons.checkmark,
+                size: 18,
+                color: context.colors.textPrimary,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

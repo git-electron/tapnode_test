@@ -79,7 +79,6 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
         documents: _applyFilters(),
         totalDocumentsCount: _allDocuments.length,
         selectedIds: selectedIds,
-        selectionMode: selectedIds.isNotEmpty,
       ),
     );
   }
@@ -139,7 +138,6 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(
       state.copyWith(
         selectedIds: selectedIds,
-        selectionMode: selectedIds.isNotEmpty,
       ),
     );
   }

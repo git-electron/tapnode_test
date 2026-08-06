@@ -107,87 +107,87 @@ class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GlassMenu(
-      controller: _menuController,
-      glowColor: context.colors.white,
-      enableInteractionGlow: false,
-      selectionColor: const Color(0x14000000),
-      settings: LiquidGlassSettings(
-        glassColor: const Color(0xF2FFFFFF),
-        backerColor: const Color(0xCCFFFFFF),
-        blur: 18,
-        thickness: 28,
-        whitenStrength: 0.75,
-        whitenGated: false,
-        shadow: [
-          const BoxShadow(
-            color: Color(0x80FFFFFF),
-            blurRadius: 44,
-            spreadRadius: 8,
-            offset: Offset(0, 18),
-          ),
-          BoxShadow(
-            color: context.colors.black.withValues(alpha: .08),
-            blurRadius: 18,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      menuWidth: 262,
-      menuHeight: 104,
-      menuBorderRadius: 34,
-      menuPadding: const Pad(vertical: 10, horizontal: 20, left: 20),
-      menuAlignment: GlassMenuAlignment.topRight,
-      items: [
-        _DropdownMenuItem(
-          onTap: _closeMenu,
-          title: 'Select',
-          icon: CupertinoIcons.check_mark_circled,
-        ),
-        _DropdownMenuItem(
-          onTap: () {
-            final hasActiveSearch = context
-                .read<DocumentsBloc>()
-                .state
-                .searchQuery
-                .isNotEmpty;
-            context.read<FloatingActionsBloc>().add(
-              FloatingActionsEvent.openAddDocumentsPopupFromAppBar(
-                shouldRestoreSearchAfterPopup: hasActiveSearch,
+    return BlocBuilder<DocumentsBloc, DocumentsState>(
+      buildWhen: (previous, current) =>
+          previous.selectionMode != current.selectionMode ||
+          previous.searchQuery != current.searchQuery,
+      builder: (context, documentsState) {
+        return GlassMenu(
+          controller: _menuController,
+          glowColor: context.colors.white,
+          enableInteractionGlow: false,
+          selectionColor: const Color(0x14000000),
+          settings: LiquidGlassSettings(
+            glassColor: const Color(0xF2FFFFFF),
+            backerColor: const Color(0xCCFFFFFF),
+            blur: 18,
+            thickness: 28,
+            whitenStrength: 0.75,
+            whitenGated: false,
+            shadow: [
+              const BoxShadow(
+                color: Color(0x80FFFFFF),
+                blurRadius: 44,
+                spreadRadius: 8,
+                offset: Offset(0, 18),
               ),
-            );
-            _closeMenu();
-          },
-          title: 'Add Document',
-          icon: CupertinoIcons.add_circled_solid,
-        ),
-      ],
-      triggerBuilder: (context, toggleMenu) {
-        return GlassIconButton(
-          size: 38,
-          borderRadius: 15.2,
-          useOwnLayer: true,
-          settings: const LiquidGlassSettings(),
-          shape: GlassIconButtonShape.roundedSquare,
-          icon: Icon(
-            CupertinoIcons.ellipsis,
-            color: context.colors.white,
-            size: 19.55,
-          ),
-          onPressed: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-            final hasActiveSearch = context
-                .read<DocumentsBloc>()
-                .state
-                .searchQuery
-                .isNotEmpty;
-            context.read<FloatingActionsBloc>().add(
-              FloatingActionsEvent.dismissForAppBarMenu(
-                shouldKeepSearchOpen: hasActiveSearch,
+              BoxShadow(
+                color: context.colors.black.withValues(alpha: .08),
+                blurRadius: 18,
+                spreadRadius: 2,
+                offset: const Offset(0, 4),
               ),
+            ],
+          ),
+          menuWidth: 262,
+          menuHeight: 104,
+          menuBorderRadius: 34,
+          menuPadding: const Pad(vertical: 10, horizontal: 20, left: 20),
+          menuAlignment: GlassMenuAlignment.topRight,
+          items: [
+            _DropdownMenuItem(
+              onTap: () => _toggleSelectionMode(documentsState.selectionMode),
+              title: documentsState.selectionMode ? 'Cancel' : 'Select',
+              icon: documentsState.selectionMode
+                  ? CupertinoIcons.xmark_circle
+                  : CupertinoIcons.check_mark_circled,
+            ),
+            _DropdownMenuItem(
+              onTap: () {
+                context.read<FloatingActionsBloc>().add(
+                  FloatingActionsEvent.openAddDocumentsPopupFromAppBar(
+                    shouldRestoreSearchAfterPopup:
+                        documentsState.searchQuery.isNotEmpty,
+                  ),
+                );
+                _closeMenu();
+              },
+              title: 'Add Document',
+              icon: CupertinoIcons.add_circled_solid,
+            ),
+          ],
+          triggerBuilder: (context, toggleMenu) {
+            return GlassIconButton(
+              size: 38,
+              borderRadius: 15.2,
+              useOwnLayer: true,
+              settings: const LiquidGlassSettings(),
+              shape: GlassIconButtonShape.roundedSquare,
+              icon: Icon(
+                CupertinoIcons.ellipsis,
+                color: context.colors.white,
+                size: 19.55,
+              ),
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                context.read<FloatingActionsBloc>().add(
+                  FloatingActionsEvent.dismissForAppBarMenu(
+                    shouldKeepSearchOpen: documentsState.searchQuery.isNotEmpty,
+                  ),
+                );
+                toggleMenu();
+              },
             );
-            toggleMenu();
           },
         );
       },
@@ -199,6 +199,15 @@ class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
       if (!mounted) return;
       _menuController.close();
     });
+  }
+
+  void _toggleSelectionMode(bool isSelectionMode) {
+    context.read<DocumentsBloc>().add(
+      isSelectionMode
+          ? const DocumentsEvent.selectionCancelled()
+          : const DocumentsEvent.selectionStarted(),
+    );
+    _closeMenu();
   }
 }
 
