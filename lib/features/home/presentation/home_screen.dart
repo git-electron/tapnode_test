@@ -14,6 +14,7 @@ part 'widgets/_body.dart';
 part 'widgets/_content.dart';
 part 'widgets/_documents_list.dart';
 part 'widgets/_filters_tab_bar.dart';
+part 'widgets/_floating_actions.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
@@ -24,6 +25,30 @@ class HomeScreen extends StatelessWidget {
     return GlassScaffold(
       backgroundColor: context.colors.appBar,
       statusBarStyle: GlassStatusBarStyle.light,
+      settings: LiquidGlassSettings(
+        blur: 14,
+        thickness: 28,
+        refractiveIndex: 1.14,
+        chromaticAberration: .18,
+        lightIntensity: 1.4,
+        saturation: 1.2,
+        whitenStrength: .35,
+        whitenGated: false,
+        shadow: [
+          BoxShadow(
+            color: context.colors.white.withValues(alpha: .72),
+            blurRadius: 34,
+            spreadRadius: 3,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: context.colors.black.withValues(alpha: .08),
+            blurRadius: 18,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       body: const SafeArea(
         bottom: false,
         child: Column(

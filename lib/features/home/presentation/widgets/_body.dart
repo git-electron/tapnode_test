@@ -19,6 +19,7 @@ class _Body extends StatelessWidget {
                   _Content(),
                   _ContentScrollFade(),
                   _FiltersTabBar(),
+                  _FloatingActions(),
                 ],
               ),
             ),

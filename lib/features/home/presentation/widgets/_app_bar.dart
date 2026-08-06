@@ -58,6 +58,7 @@ class _DropdownMenuButton extends StatelessWidget {
     return GlassMenu(
       glowColor: context.colors.white,
       enableInteractionGlow: false,
+
       selectionColor: const Color(0x14000000),
       settings: LiquidGlassSettings(
         glassColor: const Color(0xF2FFFFFF),
@@ -102,6 +103,8 @@ class _DropdownMenuButton extends StatelessWidget {
         return GlassIconButton(
           size: 38,
           borderRadius: 15.2,
+          useOwnLayer: true,
+          settings: const LiquidGlassSettings(),
           shape: GlassIconButtonShape.roundedSquare,
           icon: Icon(
             CupertinoIcons.ellipsis,

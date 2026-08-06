@@ -27,8 +27,6 @@ class AppGlassButton extends StatelessWidget {
       width: width,
       label: label,
       onTap: onTap,
-      useOwnLayer: true,
-
       shape: const LiquidRoundedRectangle(borderRadius: 28),
       interactionScale: .97,
       stretch: .28,
@@ -36,31 +34,6 @@ class AppGlassButton extends StatelessWidget {
       glowColor: context.colors.white,
       glowRadius: 1.2,
       glowOpacity: .3,
-      settings: LiquidGlassSettings(
-        blur: 14,
-        thickness: 28,
-        refractiveIndex: 1.14,
-        chromaticAberration: .18,
-        lightIntensity: 1.4,
-        saturation: 1.2,
-        whitenStrength: .35,
-        whitenGated: false,
-
-        shadow: [
-          BoxShadow(
-            color: context.colors.white.withValues(alpha: .72),
-            blurRadius: 34,
-            spreadRadius: 3,
-            offset: const Offset(0, 12),
-          ),
-          BoxShadow(
-            color: context.colors.black.withValues(alpha: .08),
-            blurRadius: 18,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
       child: Padding(
         padding: const Pad(horizontal: 20),
         child: Row(
