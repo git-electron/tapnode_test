@@ -21,7 +21,7 @@ class _DocumentsList extends StatelessWidget {
 
         return document.hasSinglePreviewImage
             ? Image.file(File(document.firstPreviewImagePath!))
-            : Text(document.title);
+            : Text(document.firstPreviewImagePath ?? 't');
       },
     );
   }

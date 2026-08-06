@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../model/document_model.dart';
 import 'pdf_preview_service.dart';
@@ -14,8 +17,8 @@ abstract interface class DocumentImportService {
 }
 
 @LazySingleton(as: DocumentImportService)
-class StubDocumentImportService implements DocumentImportService {
-  const StubDocumentImportService(
+class DefaultDocumentImportService implements DocumentImportService {
+  const DefaultDocumentImportService(
     this._pdfPreviewService,
     this._logger,
   );
@@ -65,18 +68,40 @@ class StubDocumentImportService implements DocumentImportService {
     required DocumentImportSource source,
   }) async {
     _logger.i('Document import: building draft for $source: $pdfPath');
-    final previewImagePaths = await _generatePreviewImagePaths(pdfPath);
+    final importedPdfPath = await _copyPdfToDocumentsDirectory(pdfPath);
+    final previewImagePaths = await _generatePreviewImagePaths(importedPdfPath);
     _logger.i(
       'Document import: generated ${previewImagePaths.length} preview(s): '
       '$previewImagePaths',
     );
 
     return DocumentImportDraft(
-      title: _titleFromPath(pdfPath),
-      filePath: pdfPath,
+      title: _titleFromPath(importedPdfPath),
+      filePath: importedPdfPath,
       source: source,
       previewImagePaths: previewImagePaths,
     );
+  }
+
+  Future<String> _copyPdfToDocumentsDirectory(String pdfPath) async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final importsDirectory = Directory('${documentsDirectory.path}/documents');
+
+    if (!importsDirectory.existsSync()) {
+      await importsDirectory.create(recursive: true);
+    }
+
+    final outputPath =
+        '${importsDirectory.path}/${_importedPdfFileName(pdfPath)}';
+
+    _logger.i('Document import: copying PDF to app storage: $outputPath');
+    final copiedFile = await File(pdfPath).copy(outputPath);
+    _logger.i(
+      'Document import: copied PDF exists=${copiedFile.existsSync()}, '
+      'size=${copiedFile.lengthSync()} bytes',
+    );
+
+    return copiedFile.path;
   }
 
   Future<List<String>> _generatePreviewImagePaths(String pdfPath) async {
@@ -115,5 +140,14 @@ class StubDocumentImportService implements DocumentImportService {
     if (extensionIndex <= 0) return fileName;
 
     return fileName.substring(0, extensionIndex);
+  }
+
+  String _importedPdfFileName(String path) {
+    final title = _titleFromPath(path)
+        .replaceAll(RegExp(r'[^a-zA-Z0-9_-]+'), '_')
+        .replaceAll(RegExp(r'_+'), '_');
+    final timestamp = DateTime.now().microsecondsSinceEpoch;
+
+    return '${title}_$timestamp.pdf';
   }
 }

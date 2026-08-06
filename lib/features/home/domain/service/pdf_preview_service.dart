@@ -92,6 +92,7 @@ class PdfxPreviewService implements PdfPreviewService {
         width: _renderWidth,
         height: renderHeight,
         backgroundColor: '#FFFFFF',
+        quality: 90,
       );
       final outputPath =
           '${outputDirectory.path}/${_fileName(pdfPath, pageNumber)}.jpg';
@@ -103,9 +104,11 @@ class PdfxPreviewService implements PdfPreviewService {
       }
 
       await File(outputPath).writeAsBytes(image.bytes, flush: true);
+      final outputFile = File(outputPath);
       _logger.i(
         'PDF preview: wrote page $pageNumber preview '
-        '(${image.bytes.length} bytes): $outputPath',
+        'format=${image.format}, exists=${outputFile.existsSync()}, '
+        'size=${outputFile.lengthSync()} bytes: $outputPath',
       );
 
       return outputPath;
