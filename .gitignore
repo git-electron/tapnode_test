@@ -33,6 +33,13 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Generated Dart files
+*.freezed.dart
+*.g.dart
+*.tailor.dart
+*.gen.dart
+*.config.dart
+
 # Symbolication related
 app.*.symbols
 

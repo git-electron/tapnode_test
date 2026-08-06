@@ -94,7 +94,11 @@ class _DropdownMenuButton extends StatelessWidget {
           icon: CupertinoIcons.check_mark_circled,
         ),
         _DropdownMenuItem(
-          onTap: () {},
+          onTap: () {
+            context.read<FloatingActionsBloc>().add(
+              const FloatingActionsEvent.openAddDocumentsPopup(),
+            );
+          },
           title: 'Add Document',
           icon: CupertinoIcons.add_circled_solid,
         ),
