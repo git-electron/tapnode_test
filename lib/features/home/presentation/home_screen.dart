@@ -27,6 +27,8 @@ part 'widgets/content/_documents_list.dart';
 part 'widgets/content/_filters_tab_bar.dart';
 part 'widgets/content/_empty_placeholder.dart';
 part 'widgets/content/_document_grid_item.dart';
+part 'widgets/content/_document_grid_menu.dart';
+part 'widgets/content/_document_menu_items.dart';
 part 'widgets/content/_documents_not_found_placeholder.dart';
 part 'widgets/floating_actions/_search_button.dart';
 part 'widgets/floating_actions/_floating_actions.dart';
