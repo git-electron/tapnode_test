@@ -11,6 +11,7 @@ class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
     required this.background,
     required this.appBar,
     required this.brand,
+    required this.brandSecondary,
     required this.brandGradient,
     required this.activeButton,
     required this.inactiveButton,
@@ -19,7 +20,6 @@ class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
     required this.textSecondary,
   });
 
-  @override
   @override
   final Color black;
   @override
@@ -30,6 +30,8 @@ class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
   final Color appBar;
   @override
   final Color brand;
+  @override
+  final Color brandSecondary;
   @override
   final LinearGradient brandGradient;
   @override
@@ -48,7 +50,8 @@ class Colors extends ThemeExtension<Colors> with _$ColorsTailorMixin {
     white: Color(0xFFFFFFFF),
     background: Color(0xFFF0F0F0),
     appBar: Color(0xFF242424),
-    brand: Color(0xFF6AD528),
+    brand: Color(0xFF95F35B),
+    brandSecondary: Color(0xFF6AD528),
     brandGradient: LinearGradient(
       colors: [Color(0xFF87E64C), Color(0xFFA1FF67)],
     ),

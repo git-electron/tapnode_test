@@ -4,9 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:gap/gap.dart';
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
+import '../../../app/gen/assets.gen.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_text_styles.dart';
-import '../../../app/gen/assets.gen.dart';
 import '../../../shared/app_glass_button.dart';
 
 part 'widgets/_app_bar.dart';

@@ -15,6 +15,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
   Color get background;
   Color get appBar;
   Color get brand;
+  Color get brandSecondary;
   LinearGradient get brandGradient;
   Color get activeButton;
   Color get inactiveButton;
@@ -29,6 +30,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
     Color? background,
     Color? appBar,
     Color? brand,
+    Color? brandSecondary,
     LinearGradient? brandGradient,
     Color? activeButton,
     Color? inactiveButton,
@@ -42,6 +44,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
       background: background ?? this.background,
       appBar: appBar ?? this.appBar,
       brand: brand ?? this.brand,
+      brandSecondary: brandSecondary ?? this.brandSecondary,
       brandGradient: brandGradient ?? this.brandGradient,
       activeButton: activeButton ?? this.activeButton,
       inactiveButton: inactiveButton ?? this.inactiveButton,
@@ -60,6 +63,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
       background: Color.lerp(background, other.background, t)!,
       appBar: Color.lerp(appBar, other.appBar, t)!,
       brand: Color.lerp(brand, other.brand, t)!,
+      brandSecondary: Color.lerp(brandSecondary, other.brandSecondary, t)!,
       brandGradient: t < 0.5 ? brandGradient : other.brandGradient,
       activeButton: Color.lerp(activeButton, other.activeButton, t)!,
       inactiveButton: Color.lerp(inactiveButton, other.inactiveButton, t)!,
@@ -82,6 +86,10 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
             ) &&
             const DeepCollectionEquality().equals(appBar, other.appBar) &&
             const DeepCollectionEquality().equals(brand, other.brand) &&
+            const DeepCollectionEquality().equals(
+              brandSecondary,
+              other.brandSecondary,
+            ) &&
             const DeepCollectionEquality().equals(
               brandGradient,
               other.brandGradient,
@@ -114,6 +122,7 @@ mixin _$ColorsTailorMixin on ThemeExtension<Colors> {
       const DeepCollectionEquality().hash(background),
       const DeepCollectionEquality().hash(appBar),
       const DeepCollectionEquality().hash(brand),
+      const DeepCollectionEquality().hash(brandSecondary),
       const DeepCollectionEquality().hash(brandGradient),
       const DeepCollectionEquality().hash(activeButton),
       const DeepCollectionEquality().hash(inactiveButton),
@@ -131,6 +140,7 @@ extension ColorsBuildContextProps on BuildContext {
   Color get background => colors.background;
   Color get appBar => colors.appBar;
   Color get brand => colors.brand;
+  Color get brandSecondary => colors.brandSecondary;
   LinearGradient get brandGradient => colors.brandGradient;
   Color get activeButton => colors.activeButton;
   Color get inactiveButton => colors.inactiveButton;
