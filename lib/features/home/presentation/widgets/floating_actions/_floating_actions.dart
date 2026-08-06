@@ -21,15 +21,17 @@ class _FloatingActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Align(
-      alignment: Alignment.bottomCenter,
+    return const Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
       child: SafeArea(
         child: Padding(
           padding: Pad(all: 12),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _SearchButton(),
+              Gap(12),
               _AddDocumentButton(),
             ],
           ),
@@ -48,12 +50,14 @@ class _FloatingActionsBackdrop extends StatelessWidget {
       child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
         builder: (context, state) {
           return IgnorePointer(
-            ignoring: !state.isAddDocumentsPopupOpen,
+            ignoring: !state.isAddDocumentsPopupOpen && !state.isSearchOpen,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
                 context.read<FloatingActionsBloc>().add(
-                  const FloatingActionsEvent.closeAddDocumentsPopup(),
+                  state.isAddDocumentsPopupOpen
+                      ? const FloatingActionsEvent.closeAddDocumentsPopup()
+                      : const FloatingActionsEvent.closeSearch(),
                 );
               },
               child: TweenAnimationBuilder<double>(
