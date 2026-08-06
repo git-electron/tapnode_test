@@ -11,6 +11,13 @@ class _DocumentsList extends StatelessWidget {
       items: documents,
       idOf: (document) => document.id,
       padding: const EdgeInsets.fromLTRB(28, 84, 28, 140),
+      itemHeightBuilder: (context, document, itemWidth) {
+        return _documentGridItemHeight(
+          context: context,
+          document: document,
+          maxWidth: itemWidth,
+        );
+      },
       itemBuilder: (context, document) => _DocumentGridItem(document: document),
     );
   }

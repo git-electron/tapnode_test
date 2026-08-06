@@ -7,23 +7,85 @@ class _DocumentGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Column(
-        children: [
-          _Preview(document: document),
-          const Gap(15),
-          Text(document.title, style: context.styles.header3),
-          const Gap(4),
-          Text(
-            document.createdAt.formattedDate,
-            style: context.styles.text2.copyWith(
-              color: context.colors.textSecondary,
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final titleHasTwoLines = _titleHasTwoLines(
+          context: context,
+          maxWidth: constraints.maxWidth,
+        );
+        final height = titleHasTwoLines ? 240.0 : 224.0;
+
+        return SizedBox(
+          height: height,
+          width: double.maxFinite,
+          child: Column(
+            children: [
+              _Preview(document: document),
+              const Gap(15),
+              Text(
+                document.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: context.styles.header3,
+              ),
+              const Gap(4),
+              Text(
+                document.createdAt.formattedDate,
+                style: context.styles.text2.copyWith(
+                  color: context.colors.textSecondary,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
+
+  bool _titleHasTwoLines({
+    required BuildContext context,
+    required double maxWidth,
+  }) {
+    return _documentTitleHasTwoLines(
+      context: context,
+      title: document.title,
+      maxWidth: maxWidth,
+    );
+  }
+}
+
+double _documentGridItemHeight({
+  required BuildContext context,
+  required DocumentModel document,
+  required double maxWidth,
+}) {
+  return _documentTitleHasTwoLines(
+    context: context,
+    title: document.title,
+    maxWidth: maxWidth,
+  )
+      ? 240
+      : 224;
+}
+
+bool _documentTitleHasTwoLines({
+  required BuildContext context,
+  required String title,
+  required double maxWidth,
+}) {
+  final textScaler = MediaQuery.textScalerOf(context);
+  final textPainter = TextPainter(
+    text: TextSpan(
+      text: title,
+      style: context.styles.header3,
+    ),
+    maxLines: 2,
+    textDirection: Directionality.of(context),
+    textScaler: textScaler,
+  )..layout(maxWidth: maxWidth);
+
+  return textPainter.computeLineMetrics().length > 1;
 }
 
 class _Preview extends StatelessWidget {
@@ -48,7 +110,10 @@ class _Preview extends StatelessWidget {
         ],
       );
     }
-    if (document.hasSinglePreviewImage) return _ImagePreview(path: document.firstPreviewImagePath!);
+    if (document.hasSinglePreviewImage) {
+      return _ImagePreview(path: document.firstPreviewImagePath!);
+    }
+
     return const _ImagePreview.broken();
   }
 }

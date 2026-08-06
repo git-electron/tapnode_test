@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 typedef AppAnimatedGridIdOf<T, K extends Object> = K Function(T item);
 typedef AppAnimatedGridItemBuilder<T> =
     Widget Function(BuildContext context, T item);
+typedef AppAnimatedGridItemHeightBuilder<T> =
+    double Function(BuildContext context, T item, double itemWidth);
 
 class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
   const AppAnimatedGrid({
@@ -12,6 +14,7 @@ class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
     required this.items,
     required this.idOf,
     required this.itemBuilder,
+    this.itemHeightBuilder,
     this.animationDuration = const Duration(milliseconds: 500),
     this.padding = EdgeInsets.zero,
     this.crossAxisCount = 2,
@@ -27,6 +30,7 @@ class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
   final List<T> items;
   final AppAnimatedGridIdOf<T, K> idOf;
   final AppAnimatedGridItemBuilder<T> itemBuilder;
+  final AppAnimatedGridItemHeightBuilder<T>? itemHeightBuilder;
   final Duration animationDuration;
   final EdgeInsets padding;
   final int crossAxisCount;
@@ -146,14 +150,22 @@ class _AppAnimatedGridState<T, K extends Object>
         final itemWidth = availableWidth > 0
             ? availableWidth / widget.crossAxisCount
             : 0.0;
-        final itemHeight = itemWidth / widget.childAspectRatio;
-        final visibleCount = _entries.where((entry) => !entry.removing).length;
-        final rows = (visibleCount / widget.crossAxisCount).ceil();
-        final gapsCount = rows > 0 ? rows - 1 : 0;
+        final visibleEntries = _entries
+            .where((entry) => !entry.removing)
+            .toList(growable: false);
+        final rows = (visibleEntries.length / widget.crossAxisCount).ceil();
+        final rowHeights = _rowHeights(
+          context: context,
+          entries: visibleEntries,
+          itemWidth: itemWidth,
+          rows: rows,
+        );
+        final rowOffsets = _rowOffsets(rowHeights);
+        final gapsCount = rowHeights.isNotEmpty ? rowHeights.length - 1 : 0;
         final contentHeight =
             widget.padding.top +
             widget.padding.bottom +
-            rows * itemHeight +
+            rowHeights.fold(0.0, (sum, height) => sum + height) +
             gapsCount * widget.mainAxisSpacing;
 
         return SingleChildScrollView(
@@ -169,7 +181,8 @@ class _AppAnimatedGridState<T, K extends Object>
                     key: ValueKey(entry.id),
                     entry: entry,
                     itemWidth: itemWidth,
-                    itemHeight: itemHeight,
+                    rowHeights: rowHeights,
+                    rowOffsets: rowOffsets,
                     widget: widget,
                   ),
               ],
@@ -179,6 +192,44 @@ class _AppAnimatedGridState<T, K extends Object>
       },
     );
   }
+
+  List<double> _rowHeights({
+    required BuildContext context,
+    required List<_AppAnimatedGridEntry<T, K>> entries,
+    required double itemWidth,
+    required int rows,
+  }) {
+    final defaultHeight = itemWidth / widget.childAspectRatio;
+    final rowHeights = List<double>.filled(rows, defaultHeight);
+    final itemHeightBuilder = widget.itemHeightBuilder;
+    if (itemHeightBuilder == null) return rowHeights;
+
+    for (final entry in entries) {
+      final row = entry.index ~/ widget.crossAxisCount;
+      if (row < 0 || row >= rowHeights.length) continue;
+
+      final itemHeight = itemHeightBuilder(context, entry.item, itemWidth);
+      if (itemHeight > rowHeights[row]) {
+        rowHeights[row] = itemHeight;
+      } else if (rowHeights[row] == defaultHeight) {
+        rowHeights[row] = itemHeight;
+      }
+    }
+
+    return rowHeights;
+  }
+
+  List<double> _rowOffsets(List<double> rowHeights) {
+    final offsets = <double>[];
+    var offset = widget.padding.top;
+
+    for (final rowHeight in rowHeights) {
+      offsets.add(offset);
+      offset += rowHeight + widget.mainAxisSpacing;
+    }
+
+    return offsets;
+  }
 }
 
 class _AppAnimatedGridPositionedItem<T, K extends Object>
@@ -187,28 +238,36 @@ class _AppAnimatedGridPositionedItem<T, K extends Object>
     super.key,
     required this.entry,
     required this.itemWidth,
-    required this.itemHeight,
+    required this.rowHeights,
+    required this.rowOffsets,
     required this.widget,
   });
 
   final _AppAnimatedGridEntry<T, K> entry;
   final double itemWidth;
-  final double itemHeight;
+  final List<double> rowHeights;
+  final List<double> rowOffsets;
   final AppAnimatedGrid<T, K> widget;
 
   @override
   Widget build(BuildContext context) {
     final column = entry.index % widget.crossAxisCount;
     final row = entry.index ~/ widget.crossAxisCount;
+    final rowHeight = row < rowHeights.length
+        ? rowHeights[row]
+        : itemWidth / widget.childAspectRatio;
+    final top = row < rowOffsets.length
+        ? rowOffsets[row]
+        : widget.padding.top + row * (rowHeight + widget.mainAxisSpacing);
 
     return AnimatedPositioned(
       duration: widget.animationDuration,
       curve: widget.positionCurve,
       left:
           widget.padding.left + column * (itemWidth + widget.crossAxisSpacing),
-      top: widget.padding.top + row * (itemHeight + widget.mainAxisSpacing),
+      top: top,
       width: itemWidth,
-      height: itemHeight,
+      height: rowHeight,
       child: AnimatedOpacity(
         duration: widget.animationDuration,
         curve: widget.opacityCurve,
