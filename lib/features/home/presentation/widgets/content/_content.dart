@@ -12,7 +12,7 @@ class _Content extends StatelessWidget {
           return const _DocumentsNotFoundPlaceholder();
         }
 
-        return const _DocumentsList();
+        return _DocumentsList(documents: state.documents);
       },
     );
   }
