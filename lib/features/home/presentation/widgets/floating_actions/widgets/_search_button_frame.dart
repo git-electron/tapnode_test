@@ -17,12 +17,12 @@ class _SearchButtonFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final searchProgress = progress.clamp(0.0, 1.0);
     final visibilityProgress = (progress + 1).clamp(0.0, 1.0);
-    final width = _searchButtonLerp(
+    final width = _SearchButton.lerp(
       _SearchButton.collapsedSize,
       maxWidth,
       searchProgress,
     );
-    final height = _searchButtonLerp(
+    final height = _SearchButton.lerp(
       _SearchButton.collapsedSize,
       _SearchButton.expandedHeight,
       searchProgress,
@@ -31,7 +31,7 @@ class _SearchButtonFrame extends StatelessWidget {
     return Opacity(
       opacity: visibilityProgress,
       child: Transform.scale(
-        scale: _searchButtonLerp(.88, 1, visibilityProgress),
+        scale: _SearchButton.lerp(.88, 1, visibilityProgress),
         alignment: Alignment.centerLeft,
         child: Align(
           alignment: Alignment.centerLeft,
@@ -53,8 +53,4 @@ class _SearchButtonFrame extends StatelessWidget {
       ),
     );
   }
-}
-
-double _searchButtonLerp(double begin, double end, double progress) {
-  return begin + (end - begin) * progress;
 }

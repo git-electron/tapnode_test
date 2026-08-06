@@ -26,7 +26,7 @@ class _AddDocumentPopupTitle extends StatelessWidget {
                       opacity: progress,
                       child: Transform.translate(
                         offset: Offset(
-                          _addDocumentPopupTitleLerp(132, 0, progress),
+                          _lerp(132, 0, progress),
                           0,
                         ),
                         child: child,
@@ -53,8 +53,8 @@ class _AddDocumentPopupTitle extends StatelessWidget {
       },
     );
   }
-}
 
-double _addDocumentPopupTitleLerp(double begin, double end, double progress) {
-  return begin + (end - begin) * progress;
+  double _lerp(double begin, double end, double progress) {
+    return begin + (end - begin) * progress;
+  }
 }

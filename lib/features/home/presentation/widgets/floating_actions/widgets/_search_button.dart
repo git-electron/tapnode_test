@@ -10,6 +10,10 @@ class _SearchButton extends StatefulWidget {
   static const iconTextGap = 8.0;
   static const animationDuration = Duration(milliseconds: 500);
 
+  static double lerp(double begin, double end, double progress) {
+    return begin + (end - begin) * progress;
+  }
+
   @override
   State<_SearchButton> createState() => _SearchButtonState();
 }

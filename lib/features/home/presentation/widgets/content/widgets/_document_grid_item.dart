@@ -11,15 +11,48 @@ class _DocumentGridItem extends StatelessWidget {
   final bool selectionMode;
   final bool isSelected;
 
+  static double itemHeight({
+    required BuildContext context,
+    required DocumentModel document,
+    required double maxWidth,
+  }) {
+    return titleHasTwoLines(
+          context: context,
+          title: document.title,
+          maxWidth: maxWidth,
+        )
+        ? 240
+        : 224;
+  }
+
+  static bool titleHasTwoLines({
+    required BuildContext context,
+    required String title,
+    required double maxWidth,
+  }) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: title,
+        style: context.styles.header3,
+      ),
+      maxLines: 2,
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: maxWidth);
+
+    return textPainter.computeLineMetrics().length > 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final titleHasTwoLines = _titleHasTwoLines(
+        final hasTwoTitleLines = titleHasTwoLines(
           context: context,
+          title: document.title,
           maxWidth: constraints.maxWidth,
         );
-        final height = titleHasTwoLines ? 240.0 : 224.0;
+        final height = hasTwoTitleLines ? 240.0 : 224.0;
 
         return SizedBox(
           height: height,
@@ -64,17 +97,6 @@ class _DocumentGridItem extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  bool _titleHasTwoLines({
-    required BuildContext context,
-    required double maxWidth,
-  }) {
-    return _documentTitleHasTwoLines(
-      context: context,
-      title: document.title,
-      maxWidth: maxWidth,
     );
   }
 }

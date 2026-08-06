@@ -30,7 +30,7 @@ class _DocumentsListState extends State<_DocumentsList> {
       idOf: (document) => document.id,
       padding: const EdgeInsets.fromLTRB(28, 84, 28, 140),
       itemHeightBuilder: (context, document, itemWidth) {
-        return _documentGridItemHeight(
+        return _DocumentGridItem.itemHeight(
           context: context,
           document: document,
           maxWidth: itemWidth,

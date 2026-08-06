@@ -88,7 +88,7 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
       );
       _menuAnchorTop = opensUp
           ? 0
-          : _documentGridItemHeight(
+          : _DocumentGridItem.itemHeight(
               context: context,
               document: widget.document,
               maxWidth: _itemWidth(),

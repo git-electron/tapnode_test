@@ -85,7 +85,7 @@ class _DocumentSelectionMarkShadowPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = _documentSelectionMarkLerp(
+    final radius = _lerp(
       _uncheckedRadius,
       _checkedRadius,
       progress,
@@ -124,8 +124,8 @@ class _DocumentSelectionMarkShadowPainter extends CustomPainter {
     return oldDelegate.progress != progress ||
         oldDelegate.shadowColor != shadowColor;
   }
-}
 
-double _documentSelectionMarkLerp(double begin, double end, double progress) {
-  return begin + (end - begin) * progress;
+  double _lerp(double begin, double end, double progress) {
+    return begin + (end - begin) * progress;
+  }
 }

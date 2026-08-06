@@ -25,11 +25,11 @@ class _AddDocumentPopupActionButton extends StatelessWidget {
       opacity: itemProgress,
       child: Transform.translate(
         offset: Offset(
-          _addDocumentPopupLerp(58, 0, itemProgress),
-          _addDocumentPopupLerp(64 + index * 14, 0, itemProgress),
+          _lerp(58, 0, itemProgress),
+          _lerp(64 + index * 14, 0, itemProgress),
         ),
         child: Transform.scale(
-          scale: _addDocumentPopupLerp(.86, 1, itemProgress),
+          scale: _lerp(.86, 1, itemProgress),
           alignment: Alignment.centerRight,
           child: AppGlassButton(
             width: _AddDocumentPopupActions._width,
@@ -60,8 +60,8 @@ class _AddDocumentPopupActionButton extends StatelessWidget {
 
     return 1 - Curves.easeOutExpo.transform(1 - shiftedValue);
   }
-}
 
-double _addDocumentPopupLerp(double begin, double end, double progress) {
-  return begin + (end - begin) * progress;
+  double _lerp(double begin, double end, double progress) {
+    return begin + (end - begin) * progress;
+  }
 }

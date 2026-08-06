@@ -35,7 +35,6 @@ part 'widgets/content/widgets/_empty_placeholder_import_actions.dart';
 part 'widgets/content/widgets/_filter_dividers.dart';
 part 'widgets/content/widgets/_filters_tab_bar.dart';
 part 'widgets/content/widgets/_document_grid_item.dart';
-part 'widgets/content/widgets/_document_grid_item_size.dart';
 part 'widgets/content/widgets/_document_grid_menu.dart';
 part 'widgets/content/widgets/_document_image_preview.dart';
 part 'widgets/content/widgets/_document_delete_menu_button.dart';

@@ -96,12 +96,16 @@ class _AddDocumentGlassButton extends StatelessWidget {
       resistance: .04,
       glowColor: context.colors.white,
       glowRadius: 1.2,
-      glowOpacity: _addDocumentButtonLerp(.1, .3, progress),
+      glowOpacity: _lerp(.1, .3, progress),
       child: _AddDocumentButtonContent(
         progress: progress,
         selectionMode: selectionMode,
       ),
     );
+  }
+
+  double _lerp(double begin, double end, double progress) {
+    return begin + (end - begin) * progress;
   }
 
   LiquidGlassSettings _solidSettings(BuildContext context) {
@@ -118,8 +122,4 @@ class _AddDocumentGlassButton extends StatelessWidget {
       shadow: const [],
     );
   }
-}
-
-double _addDocumentButtonLerp(double begin, double end, double progress) {
-  return begin + (end - begin) * progress;
 }

@@ -48,7 +48,7 @@ class _SearchButtonIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _searchButtonLerp(
+      width: _SearchButton.lerp(
         _SearchButton.collapsedSize,
         _SearchButton.leftPadding + _SearchButton.iconSize,
         progress,
