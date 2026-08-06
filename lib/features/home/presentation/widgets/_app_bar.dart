@@ -126,17 +126,10 @@ class _SelectAllButton extends StatelessWidget {
   static const _duration = Duration(milliseconds: 220);
   static const _textDuration = Duration(milliseconds: 160);
 
-  bool get _hasVisibleDocuments => state.documents.isNotEmpty;
-
-  bool get _areAllVisibleDocumentsSelected {
-    return _hasVisibleDocuments &&
-        state.documents.every(
-          (document) => state.selectedIds.contains(document.id),
-        );
-  }
+  bool get _hasSelectedDocuments => state.selectedIds.isNotEmpty;
 
   String get _title {
-    if (_areAllVisibleDocumentsSelected) {
+    if (_hasSelectedDocuments) {
       return 'Deselect All (${state.selectedIds.length})';
     }
 
@@ -165,7 +158,7 @@ class _SelectAllButton extends StatelessWidget {
           curve: Curves.easeOutCubic,
           onTap: () {
             context.read<DocumentsBloc>().add(
-              _areAllVisibleDocumentsSelected
+              _hasSelectedDocuments
                   ? const DocumentsEvent.deselectAll()
                   : const DocumentsEvent.selectAll(),
             );
