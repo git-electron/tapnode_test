@@ -9,7 +9,7 @@ import '../../../app/gen/assets.gen.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_text_styles.dart';
 import '../../../shared/app_glass_button.dart';
-import '../domain/bloc/floating_actions_bloc.dart';
+import '../domain/bloc/floating_actions_bloc/floating_actions_bloc.dart';
 
 part 'widgets/_app_bar.dart';
 part 'widgets/_body.dart';
