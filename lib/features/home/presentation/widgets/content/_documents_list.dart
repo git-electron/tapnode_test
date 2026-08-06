@@ -7,22 +7,24 @@ class _DocumentsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const Pad(horizontal: 28, top: 84, bottom: 140),
-      itemCount: documents.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 24,
-        mainAxisSpacing: 24,
-        childAspectRatio: .72,
-      ),
-      itemBuilder: (context, index) {
-        final document = documents[index];
-
-        return document.hasSinglePreviewImage
-            ? Image.file(File(document.firstPreviewImagePath!))
-            : Text(document.firstPreviewImagePath ?? 't');
-      },
+    return AppAnimatedGrid<DocumentModel, int>(
+      items: documents,
+      idOf: (document) => document.id,
+      padding: const EdgeInsets.fromLTRB(28, 84, 28, 140),
+      itemBuilder: (context, document) => _DocumentGridItem(document: document),
     );
+  }
+}
+
+class _DocumentGridItem extends StatelessWidget {
+  const _DocumentGridItem({required this.document});
+
+  final DocumentModel document;
+
+  @override
+  Widget build(BuildContext context) {
+    return document.hasSinglePreviewImage
+        ? Image.file(File(document.firstPreviewImagePath!))
+        : Text(document.firstPreviewImagePath ?? 't');
   }
 }
