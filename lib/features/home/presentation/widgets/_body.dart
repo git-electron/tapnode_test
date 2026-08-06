@@ -5,27 +5,41 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(36),
-      ),
-      child: ColoredBox(
-        color: context.colors.background,
-        child: const Column(
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  _Content(),
-                  _ContentScrollFade(),
-                  _FiltersTabBar(),
-                  _FloatingActions(),
-                ],
-              ),
-            ),
-          ],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ColoredBox(color: context.colors.background),
+        Align(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            height: 36,
+            width: double.maxFinite,
+            child: ColoredBox(color: context.colors.appBar),
+          ),
         ),
-      ),
+        ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(36),
+          ),
+          child: ColoredBox(
+            color: context.colors.background,
+            child: const Column(
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      _Content(),
+                      _ContentScrollFade(),
+                      _FiltersTabBar(),
+                      _FloatingActions(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

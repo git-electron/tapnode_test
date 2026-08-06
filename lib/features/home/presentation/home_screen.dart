@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassScaffold(
-      backgroundColor: context.colors.appBar,
+      backgroundColor: context.colors.background,
       statusBarStyle: GlassStatusBarStyle.light,
       settings: LiquidGlassSettings(
         blur: 14,
@@ -55,14 +55,11 @@ class HomeScreen extends StatelessWidget {
       ),
       body: BlocProvider(
         create: (_) => FloatingActionsBloc(),
-        child: const SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              _AppBar(),
-              Expanded(child: _Body()),
-            ],
-          ),
+        child: const Column(
+          children: [
+            _AppBar(),
+            Expanded(child: _Body()),
+          ],
         ),
       ),
     );

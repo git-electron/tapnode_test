@@ -5,21 +5,27 @@ class _AppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 66,
-      child: Padding(
-        padding: Pad(
-          top: 12,
-          left: 18,
-          right: 16,
-          bottom: 16,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _Logo(),
-            _DropdownMenuButton(),
-          ],
+    return ColoredBox(
+      color: context.colors.appBar,
+      child: const SafeArea(
+        bottom: false,
+        child: SizedBox(
+          height: 66,
+          child: Padding(
+            padding: Pad(
+              top: 12,
+              left: 18,
+              right: 16,
+              bottom: 16,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _Logo(),
+                _DropdownMenuButton(),
+              ],
+            ),
+          ),
         ),
       ),
     );
