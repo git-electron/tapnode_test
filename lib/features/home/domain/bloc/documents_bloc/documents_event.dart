@@ -24,6 +24,8 @@ sealed class DocumentsEvent with _$DocumentsEvent {
 
   const factory DocumentsEvent.deselectAll() = _DeselectAll;
 
+  const factory DocumentsEvent.deleteRequested(int id) = _DeleteRequested;
+
   // TODO: remove
   const factory DocumentsEvent.deleteAllRequested() = _DeleteAllRequested;
 
