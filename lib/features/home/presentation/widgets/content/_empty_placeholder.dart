@@ -33,7 +33,9 @@ class _EmptyPlaceholder extends StatelessWidget {
                 icon: Assets.images.files.image(),
                 onTap: () {
                   context.read<DocumentsBloc>().add(
-                    const DocumentsEvent.importFromFilesRequested(),
+                    const DocumentsEvent.importRequested(
+                      DocumentImportSource.file,
+                    ),
                   );
                 },
               ),
@@ -43,7 +45,9 @@ class _EmptyPlaceholder extends StatelessWidget {
                 icon: Assets.images.gallery.image(),
                 onTap: () {
                   context.read<DocumentsBloc>().add(
-                    const DocumentsEvent.importFromGalleryRequested(),
+                    const DocumentsEvent.importRequested(
+                      DocumentImportSource.gallery,
+                    ),
                   );
                 },
               ),
@@ -55,7 +59,9 @@ class _EmptyPlaceholder extends StatelessWidget {
             icon: Assets.images.camera.image(),
             onTap: () {
               context.read<DocumentsBloc>().add(
-                const DocumentsEvent.importFromScannerRequested(),
+                const DocumentsEvent.importRequested(
+                  DocumentImportSource.scanner,
+                ),
               );
             },
           ),

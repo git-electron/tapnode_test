@@ -15,17 +15,17 @@ class _AddDocumentPopupActions extends StatelessWidget {
     _AddDocumentPopupAction(
       label: 'Files',
       icon: Assets.images.files.image(fit: BoxFit.cover),
-      event: const DocumentsEvent.importFromFilesRequested(),
+      source: DocumentImportSource.file,
     ),
     _AddDocumentPopupAction(
       label: 'Photos',
       icon: Assets.images.gallery.image(fit: BoxFit.cover),
-      event: const DocumentsEvent.importFromGalleryRequested(),
+      source: DocumentImportSource.gallery,
     ),
     _AddDocumentPopupAction(
       label: 'Scanner',
       icon: Assets.images.camera.image(fit: BoxFit.cover),
-      event: const DocumentsEvent.importFromScannerRequested(),
+      source: DocumentImportSource.scanner,
     ),
   ];
 
@@ -105,7 +105,9 @@ class _AnimatedAddDocumentPopupAction extends StatelessWidget {
             icon: action.icon,
             label: action.label,
             onTap: () {
-              context.read<DocumentsBloc>().add(action.event);
+              context.read<DocumentsBloc>().add(
+                DocumentsEvent.importRequested(action.source),
+              );
               context.read<FloatingActionsBloc>().add(
                 const FloatingActionsEvent.closeAddDocumentsPopup(),
               );
@@ -131,12 +133,12 @@ class _AddDocumentPopupAction {
   const _AddDocumentPopupAction({
     required this.label,
     required this.icon,
-    required this.event,
+    required this.source,
   });
 
   final String label;
   final Widget icon;
-  final DocumentsEvent event;
+  final DocumentImportSource source;
 }
 
 double _addDocumentPopupLerp(double begin, double end, double progress) {

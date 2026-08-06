@@ -32,15 +32,6 @@ sealed class DocumentsEvent with _$DocumentsEvent {
   const factory DocumentsEvent.selectedDeleteRequested() =
       _SelectedDeleteRequested;
 
-  // TODO: remove
-  const factory DocumentsEvent.deleteAllRequested() = _DeleteAllRequested;
-
-  const factory DocumentsEvent.importFromFilesRequested() =
-      _ImportFromFilesRequested;
-
-  const factory DocumentsEvent.importFromGalleryRequested() =
-      _ImportFromGalleryRequested;
-
-  const factory DocumentsEvent.importFromScannerRequested() =
-      _ImportFromScannerRequested;
+  const factory DocumentsEvent.importRequested(DocumentImportSource source) =
+      _ImportRequested;
 }

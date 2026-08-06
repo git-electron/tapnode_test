@@ -5,13 +5,11 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 
-abstract interface class PdfPreviewService {
-  Future<List<String>> generateForPdf(String pdfPath);
-}
+import 'pdf_preview_service.dart';
 
 @LazySingleton(as: PdfPreviewService)
-class PdfxPreviewService implements PdfPreviewService {
-  const PdfxPreviewService(this._logger);
+class PdfPreviewServiceImpl implements PdfPreviewService {
+  const PdfPreviewServiceImpl(this._logger);
 
   final Logger _logger;
   static const _renderWidth = 512.0;

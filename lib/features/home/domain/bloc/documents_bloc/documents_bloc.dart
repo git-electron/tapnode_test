@@ -7,7 +7,9 @@ import 'package:logger/logger.dart';
 
 import '../../../data/repository/documents_repository.dart';
 import '../../model/document_model.dart';
-import '../../service/document_import_service.dart';
+import '../../service/documents_filter/documents_filter_service.dart';
+import '../../service/documents_selection/documents_selection_service.dart';
+import '../../use_case/import_document_use_case.dart';
 
 part 'documents_event.dart';
 part 'documents_state.dart';
@@ -17,10 +19,14 @@ part 'documents_bloc.freezed.dart';
 class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   DocumentsBloc({
     required DocumentsRepository repository,
-    required DocumentImportService importService,
+    required ImportDocumentUseCase importDocumentUseCase,
+    required DocumentsFilterService filterService,
+    required DocumentsSelectionService selectionService,
     required Logger logger,
   }) : _repository = repository,
-       _importService = importService,
+       _importDocumentUseCase = importDocumentUseCase,
+       _filterService = filterService,
+       _selectionService = selectionService,
        _logger = logger,
        super(const DocumentsState()) {
     on<_Started>(_onStarted);
@@ -35,15 +41,13 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     on<_DocumentSignedToggled>(_onDocumentSignedToggled);
     on<_DeleteRequested>(_onDeleteRequested);
     on<_SelectedDeleteRequested>(_onSelectedDeleteRequested);
-    // TODO: remove
-    on<_DeleteAllRequested>(_onDeleteAllRequested);
-    on<_ImportFromFilesRequested>(_onImportFromFilesRequested);
-    on<_ImportFromGalleryRequested>(_onImportFromGalleryRequested);
-    on<_ImportFromScannerRequested>(_onImportFromScannerRequested);
+    on<_ImportRequested>(_onImportRequested);
   }
 
   final DocumentsRepository _repository;
-  final DocumentImportService _importService;
+  final ImportDocumentUseCase _importDocumentUseCase;
+  final DocumentsFilterService _filterService;
+  final DocumentsSelectionService _selectionService;
   final Logger _logger;
 
   StreamSubscription<List<DocumentModel>>? _subscription;
@@ -73,11 +77,14 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     Emitter<DocumentsState> emit,
   ) {
     _allDocuments = event.documents;
-    final selectedIds = _sanitizeSelectedIds(state.selectedIds);
+    final selectedIds = _selectionService.sanitize(
+      selectedIds: state.selectedIds,
+      documents: _allDocuments,
+    );
 
     emit(
       state.copyWith(
-        documents: _applyFilters(),
+        documents: _visibleDocuments(),
         totalDocumentsCount: _allDocuments.length,
         selectedIds: selectedIds,
       ),
@@ -91,7 +98,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(
       state.copyWith(
         searchQuery: event.query,
-        documents: _applyFilters(searchQuery: event.query),
+        documents: _visibleDocuments(searchQuery: event.query),
       ),
     );
   }
@@ -103,7 +110,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(
       state.copyWith(
         filter: event.filter,
-        documents: _applyFilters(filter: event.filter),
+        documents: _visibleDocuments(filter: event.filter),
       ),
     );
   }
@@ -131,14 +138,9 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     _DocumentSelectionToggled event,
     Emitter<DocumentsState> emit,
   ) {
-    final selectedIds = {...state.selectedIds};
-    if (!selectedIds.add(event.id)) {
-      selectedIds.remove(event.id);
-    }
-
     emit(
       state.copyWith(
-        selectedIds: selectedIds,
+        selectedIds: _selectionService.toggle(state.selectedIds, event.id),
       ),
     );
   }
@@ -150,9 +152,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(
       state.copyWith(
         selectionMode: true,
-        selectedIds: {
-          for (final document in state.documents) document.id,
-        },
+        selectedIds: _selectionService.selectAll(state.documents),
       ),
     );
   }
@@ -193,7 +193,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
 
     try {
       await _repository.deleteDocument(event.id);
-      final selectedIds = {...state.selectedIds}..remove(event.id);
+      final selectedIds = _selectionService.remove(state.selectedIds, event.id);
       emit(
         state.copyWith(
           loading: false,
@@ -252,78 +252,15 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     }
   }
 
-  // TODO: remove
-  Future<void> _onDeleteAllRequested(
-    _DeleteAllRequested event,
+  Future<void> _onImportRequested(
+    _ImportRequested event,
     Emitter<DocumentsState> emit,
-  ) async {
-    emit(state.copyWith(loading: true, error: null));
-
-    try {
-      await _repository.deleteAllDocuments();
-      emit(
-        state.copyWith(
-          loading: false,
-          selectionMode: false,
-          selectedIds: const {},
-        ),
-      );
-    } on Object catch (error) {
-      emit(
-        state.copyWith(
-          loading: false,
-          error: error.toString(),
-        ),
-      );
-    }
-  }
-
-  Future<void> _onImportFromFilesRequested(
-    _ImportFromFilesRequested event,
-    Emitter<DocumentsState> emit,
-  ) async {
-    await _importDocument(emit, _importService.pickFromFiles);
-  }
-
-  Future<void> _onImportFromGalleryRequested(
-    _ImportFromGalleryRequested event,
-    Emitter<DocumentsState> emit,
-  ) async {
-    await _importDocument(emit, _importService.pickFromGallery);
-  }
-
-  Future<void> _onImportFromScannerRequested(
-    _ImportFromScannerRequested event,
-    Emitter<DocumentsState> emit,
-  ) async {
-    await _importDocument(
-      emit,
-      _importService.scanWithCunningDocumentScanner,
-    );
-  }
-
-  Future<void> _importDocument(
-    Emitter<DocumentsState> emit,
-    Future<DocumentImportDraft?> Function() importDocument,
   ) async {
     _logger.i('Documents bloc: import started');
     emit(state.copyWith(loading: true, error: null));
 
     try {
-      final draft = await importDocument();
-      if (draft == null) {
-        _logger.i('Documents bloc: import cancelled');
-        emit(state.copyWith(loading: false));
-        return;
-      }
-
-      _logger.i(
-        'Documents bloc: import draft ready '
-        'title=${draft.title}, filePath=${draft.filePath}, '
-        'previews=${draft.previewImagePaths.length}',
-      );
-      await _repository.addDocument(draft.toDocumentModel());
-      _logger.i('Documents bloc: import completed');
+      await _importDocumentUseCase(event.source);
       emit(state.copyWith(loading: false));
     } on Object catch (error, stackTrace) {
       _logger.e(
@@ -340,34 +277,14 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     }
   }
 
-  List<DocumentModel> _applyFilters({
+  List<DocumentModel> _visibleDocuments({
     DocumentsFilter? filter,
     String? searchQuery,
   }) {
-    final effectiveFilter = filter ?? state.filter;
-    final effectiveSearchQuery = (searchQuery ?? state.searchQuery)
-        .trim()
-        .toLowerCase();
-
-    return _allDocuments
-        .where((document) {
-          final matchesFilter = switch (effectiveFilter) {
-            DocumentsFilter.all => true,
-            DocumentsFilter.signed => document.isSigned,
-            DocumentsFilter.unsigned => !document.isSigned,
-          };
-          final matchesSearch =
-              effectiveSearchQuery.isEmpty ||
-              document.title.toLowerCase().contains(effectiveSearchQuery);
-
-          return matchesFilter && matchesSearch;
-        })
-        .toList(growable: false);
-  }
-
-  Set<int> _sanitizeSelectedIds(Set<int> selectedIds) {
-    final documentIds = _allDocuments.map((document) => document.id).toSet();
-
-    return selectedIds.where(documentIds.contains).toSet();
+    return _filterService.apply(
+      documents: _allDocuments,
+      filter: filter ?? state.filter,
+      searchQuery: searchQuery ?? state.searchQuery,
+    );
   }
 }
