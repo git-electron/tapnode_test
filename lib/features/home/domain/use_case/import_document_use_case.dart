@@ -1,21 +1,21 @@
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
-import '../../data/repository/add_document/add_document_repository.dart';
 import '../model/document_model.dart';
 import '../service/document_import/document_import_service.dart';
+import '../service/documents/documents_service.dart';
 
 @injectable
 class ImportDocumentUseCase {
   const ImportDocumentUseCase({
-    required AddDocumentRepository addDocumentRepository,
+    required DocumentsService documentsService,
     required DocumentImportService importService,
     required Logger logger,
-  }) : _addDocumentRepository = addDocumentRepository,
+  }) : _documentsService = documentsService,
        _importService = importService,
        _logger = logger;
 
-  final AddDocumentRepository _addDocumentRepository;
+  final DocumentsService _documentsService;
   final DocumentImportService _importService;
   final Logger _logger;
 
@@ -32,7 +32,7 @@ class ImportDocumentUseCase {
       'title=${draft.title}, filePath=${draft.filePath}, '
       'previews=${draft.previewImagePaths.length}',
     );
-    await _addDocumentRepository(draft.toDocumentModel());
+    await _documentsService.add(draft.toDocumentModel());
     _logger.i('Documents import use case: import completed');
 
     return true;
