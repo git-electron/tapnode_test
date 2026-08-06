@@ -41,7 +41,7 @@ class _SearchButtonState extends State<_SearchButton> {
       child: BlocListener<FloatingActionsBloc, FloatingActionsState>(
         listenWhen: (previous, current) =>
             previous.searchText != current.searchText,
-        listener: _syncControllerText,
+        listener: _handleSearchTextChanged,
         child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
           builder: (context, state) {
             return _SearchButtonLayout(
@@ -84,6 +84,16 @@ class _SearchButtonState extends State<_SearchButton> {
     _controller.value = TextEditingValue(
       text: state.searchText,
       selection: TextSelection.collapsed(offset: state.searchText.length),
+    );
+  }
+
+  void _handleSearchTextChanged(
+    BuildContext context,
+    FloatingActionsState state,
+  ) {
+    _syncControllerText(context, state);
+    context.read<DocumentsBloc>().add(
+      DocumentsEvent.searchChanged(state.searchText),
     );
   }
 
@@ -285,6 +295,10 @@ class _SearchTextField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       placeholder: 'Search Documents',
+      autocorrect: false,
+      enableSuggestions: false,
+      smartDashesType: SmartDashesType.disabled,
+      smartQuotesType: SmartQuotesType.disabled,
       padding: EdgeInsets.zero,
       decoration: const BoxDecoration(),
       style: context.styles.text1.copyWith(

@@ -1,55 +1,73 @@
 part of '../../home_screen.dart';
 
-class _FiltersTabBar extends StatefulWidget {
+class _FiltersTabBar extends StatelessWidget {
   const _FiltersTabBar();
 
   @override
-  State<_FiltersTabBar> createState() => _FiltersTabBarState();
-}
-
-class _FiltersTabBarState extends State<_FiltersTabBar> {
-  var _selectedIndex = 0;
-
-  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const Pad(all: 16),
-      child: SizedBox(
-        height: 36,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            GlassSegmentedControl(
-              segments: const [
-                GlassSegment(label: 'All'),
-                GlassSegment(label: 'Signed'),
-                GlassSegment(label: 'Unsigned'),
+    return BlocBuilder<DocumentsBloc, DocumentsState>(
+      buildWhen: (previous, current) => previous.filter != current.filter,
+      builder: (context, state) {
+        final selectedIndex = _selectedIndexForFilter(state.filter);
+
+        return Padding(
+          padding: const Pad(all: 16),
+          child: SizedBox(
+            height: 36,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                GlassSegmentedControl(
+                  segments: const [
+                    GlassSegment(label: 'All'),
+                    GlassSegment(label: 'Signed'),
+                    GlassSegment(label: 'Unsigned'),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onSegmentSelected: (index) {
+                    context.read<DocumentsBloc>().add(
+                      DocumentsEvent.filterChanged(_filterForIndex(index)),
+                    );
+                  },
+                  height: 36,
+                  borderRadius: 18,
+                  indicatorBorderRadius: 18,
+                  padding: const Pad(all: 4),
+                  backgroundColor: context.colors.inactiveButton.withValues(
+                    alpha: .12,
+                  ),
+                  indicatorColor: context.colors.white,
+                  selectedTextStyle: context.styles.header3.copyWith(
+                    color: context.colors.textPrimary,
+                  ),
+                  unselectedTextStyle: context.styles.header3.copyWith(
+                    color: context.colors.textPrimary,
+                  ),
+                  quality: GlassQuality.premium,
+                ),
+                _FilterDividers(selectedIndex: selectedIndex),
               ],
-              selectedIndex: _selectedIndex,
-              onSegmentSelected: (index) {
-                setState(() => _selectedIndex = index);
-              },
-              height: 36,
-              borderRadius: 18,
-              indicatorBorderRadius: 18,
-              padding: const Pad(all: 4),
-              backgroundColor: context.colors.inactiveButton.withValues(
-                alpha: .12,
-              ),
-              indicatorColor: context.colors.white,
-              selectedTextStyle: context.styles.header3.copyWith(
-                color: context.colors.textPrimary,
-              ),
-              unselectedTextStyle: context.styles.header3.copyWith(
-                color: context.colors.textPrimary,
-              ),
-              quality: GlassQuality.premium,
             ),
-            _FilterDividers(selectedIndex: _selectedIndex),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  int _selectedIndexForFilter(DocumentsFilter filter) {
+    return switch (filter) {
+      DocumentsFilter.all => 0,
+      DocumentsFilter.signed => 1,
+      DocumentsFilter.unsigned => 2,
+    };
+  }
+
+  DocumentsFilter _filterForIndex(int index) {
+    return switch (index) {
+      1 => DocumentsFilter.signed,
+      2 => DocumentsFilter.unsigned,
+      _ => DocumentsFilter.all,
+    };
   }
 }
 
@@ -94,7 +112,8 @@ class _FilterDivider extends StatefulWidget {
   State<_FilterDivider> createState() => _FilterDividerState();
 }
 
-class _FilterDividerState extends State<_FilterDivider> with SingleTickerProviderStateMixin {
+class _FilterDividerState extends State<_FilterDivider>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _opacityController;
 
   @override
