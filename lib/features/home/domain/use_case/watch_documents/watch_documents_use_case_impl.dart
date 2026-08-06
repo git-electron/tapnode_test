@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 
 import '../../model/document_model.dart';
-import '../../service/documents/documents_service.dart';
+import '../../service/service.dart';
 import 'watch_documents_use_case.dart';
 
 @LazySingleton(as: WatchDocumentsUseCase)

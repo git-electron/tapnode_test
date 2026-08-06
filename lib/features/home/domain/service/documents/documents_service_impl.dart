@@ -1,9 +1,6 @@
 import 'package:injectable/injectable.dart';
 
-import '../../../data/repository/add_document/add_document_repository.dart';
-import '../../../data/repository/delete_document/delete_document_repository.dart';
-import '../../../data/repository/toggle_document_signed/toggle_document_signed_repository.dart';
-import '../../../data/repository/watch_documents/watch_documents_repository.dart';
+import '../../../data/repository/repository.dart';
 import '../../model/document_model.dart';
 import 'documents_service.dart';
 

@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 
-import '../../service/documents/documents_service.dart';
+import '../../service/service.dart';
 import 'toggle_document_signed_use_case.dart';
 
 @LazySingleton(as: ToggleDocumentSignedUseCase)

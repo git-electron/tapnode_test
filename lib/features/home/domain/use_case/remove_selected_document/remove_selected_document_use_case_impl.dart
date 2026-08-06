@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 
-import '../../service/documents_selection/documents_selection_service.dart';
+import '../../service/service.dart';
 import 'remove_selected_document_use_case.dart';
 
 @LazySingleton(as: RemoveSelectedDocumentUseCase)

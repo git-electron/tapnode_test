@@ -2,8 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
 import '../../model/document_model.dart';
-import '../../service/document_import/document_import_service.dart';
-import '../../service/documents/documents_service.dart';
+import '../../service/service.dart';
 import 'import_document_use_case.dart';
 
 @LazySingleton(as: ImportDocumentUseCase)

@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 
-import '../../service/documents_selection/documents_selection_service.dart';
+import '../../service/service.dart';
 import 'toggle_document_selection_use_case.dart';
 
 @LazySingleton(as: ToggleDocumentSelectionUseCase)

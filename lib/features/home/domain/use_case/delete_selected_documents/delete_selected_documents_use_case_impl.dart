@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 
-import '../../service/documents/documents_service.dart';
+import '../../service/service.dart';
 import 'delete_selected_documents_use_case.dart';
 
 @LazySingleton(as: DeleteSelectedDocumentsUseCase)

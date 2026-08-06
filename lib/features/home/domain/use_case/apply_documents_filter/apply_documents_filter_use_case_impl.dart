@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 
 import '../../model/document_model.dart';
-import '../../service/documents_filter/documents_filter_service.dart';
+import '../../service/service.dart';
 import 'apply_documents_filter_use_case.dart';
 
 @LazySingleton(as: ApplyDocumentsFilterUseCase)

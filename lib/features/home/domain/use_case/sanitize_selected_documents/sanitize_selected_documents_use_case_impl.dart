@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 
 import '../../model/document_model.dart';
-import '../../service/documents_selection/documents_selection_service.dart';
+import '../../service/service.dart';
 import 'sanitize_selected_documents_use_case.dart';
 
 @LazySingleton(as: SanitizeSelectedDocumentsUseCase)
