@@ -15,6 +15,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_text_styles.dart';
 import '../../../shared/app_animated_grid.dart';
 import '../../../shared/app_glass_button.dart';
+import '../../../shared/tappable.dart';
 import '../domain/bloc/documents_bloc/documents_bloc.dart';
 import '../domain/bloc/floating_actions_bloc/floating_actions_bloc.dart';
 import '../domain/model/document_model.dart';
