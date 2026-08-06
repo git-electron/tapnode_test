@@ -2,8 +2,8 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
 import '../../../model/document_model.dart';
-import '../utils/path_utils.dart';
 import '../document_import_service.dart';
+import '../utils/path_utils.dart';
 
 @LazySingleton(as: GalleryDocumentImporter)
 class GalleryDocumentImporterImpl implements GalleryDocumentImporter {

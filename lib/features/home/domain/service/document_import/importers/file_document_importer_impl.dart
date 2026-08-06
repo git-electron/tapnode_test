@@ -3,8 +3,8 @@ import 'package:logger/logger.dart';
 
 import '../../../model/document_model.dart';
 import '../../pdf_preview/pdf_preview_service.dart';
-import '../utils/path_utils.dart';
 import '../document_import_service.dart';
+import '../utils/path_utils.dart';
 
 @LazySingleton(as: FileDocumentImporter)
 class FileDocumentImporterImpl implements FileDocumentImporter {

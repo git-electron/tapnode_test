@@ -21,20 +21,25 @@ import '../domain/bloc/floating_actions_bloc/floating_actions_bloc.dart';
 import '../domain/model/document_model.dart';
 
 part 'widgets/_body.dart';
-part 'widgets/_app_bar.dart';
+part 'widgets/app_bar/_app_bar.dart';
+part 'widgets/app_bar/widgets/_app_bar_leading.dart';
+part 'widgets/app_bar/widgets/_app_bar_menu_button.dart';
+part 'widgets/app_bar/widgets/_app_bar_menu_item.dart';
+part 'widgets/app_bar/widgets/_app_logo.dart';
+part 'widgets/app_bar/widgets/_selection_mode_action_button.dart';
 part 'widgets/content/_content.dart';
-part 'widgets/content/_documents_list.dart';
-part 'widgets/content/_filters_tab_bar.dart';
-part 'widgets/content/_empty_placeholder.dart';
-part 'widgets/content/_document_grid_item.dart';
-part 'widgets/content/_document_grid_menu.dart';
-part 'widgets/content/_document_menu_items.dart';
-part 'widgets/content/_documents_not_found_placeholder.dart';
-part 'widgets/floating_actions/_search_button.dart';
+part 'widgets/content/widgets/_documents_list.dart';
+part 'widgets/content/widgets/_filters_tab_bar.dart';
+part 'widgets/content/widgets/_empty_placeholder.dart';
+part 'widgets/content/widgets/_document_grid_item.dart';
+part 'widgets/content/widgets/_document_grid_menu.dart';
+part 'widgets/content/widgets/_document_menu_items.dart';
+part 'widgets/content/widgets/_documents_not_found_placeholder.dart';
+part 'widgets/floating_actions/widgets/_search_button.dart';
 part 'widgets/floating_actions/_floating_actions.dart';
-part 'widgets/floating_actions/_add_document_button.dart';
-part 'widgets/floating_actions/_add_document_popup_title.dart';
-part 'widgets/floating_actions/_add_document_popup_actions.dart';
+part 'widgets/floating_actions/widgets/_add_document_button.dart';
+part 'widgets/floating_actions/widgets/_add_document_popup_title.dart';
+part 'widgets/floating_actions/widgets/_add_document_popup_actions.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {

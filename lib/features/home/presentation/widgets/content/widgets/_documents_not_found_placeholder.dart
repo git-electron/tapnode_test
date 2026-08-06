@@ -1,4 +1,4 @@
-part of '../../home_screen.dart';
+part of '../../../home_screen.dart';
 
 class _DocumentsNotFoundPlaceholder extends StatelessWidget {
   const _DocumentsNotFoundPlaceholder();

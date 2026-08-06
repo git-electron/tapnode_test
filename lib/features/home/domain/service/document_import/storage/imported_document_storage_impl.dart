@@ -4,8 +4,8 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../utils/path_utils.dart';
 import '../document_import_service.dart';
+import '../utils/path_utils.dart';
 
 @LazySingleton(as: ImportedDocumentStorage)
 class ImportedDocumentStorageImpl implements ImportedDocumentStorage {
