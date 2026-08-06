@@ -25,46 +25,7 @@ class _EmptyPlaceholder extends StatelessWidget {
             ),
           ),
           const Gap(18),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AppGlassButton(
-                label: 'Files',
-                icon: Assets.images.files.image(),
-                onTap: () {
-                  context.read<DocumentsBloc>().add(
-                    const DocumentsEvent.importRequested(
-                      DocumentImportSource.file,
-                    ),
-                  );
-                },
-              ),
-              const Gap(12),
-              AppGlassButton(
-                label: 'Photos',
-                icon: Assets.images.gallery.image(),
-                onTap: () {
-                  context.read<DocumentsBloc>().add(
-                    const DocumentsEvent.importRequested(
-                      DocumentImportSource.gallery,
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const Gap(12),
-          AppGlassButton(
-            label: 'Scanner',
-            icon: Assets.images.camera.image(),
-            onTap: () {
-              context.read<DocumentsBloc>().add(
-                const DocumentsEvent.importRequested(
-                  DocumentImportSource.scanner,
-                ),
-              );
-            },
-          ),
+          const _EmptyPlaceholderImportActions(),
           const Spacer(flex: 3),
         ],
       ),
