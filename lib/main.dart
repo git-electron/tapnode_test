@@ -17,5 +17,7 @@ void main() async {
   );
   SystemChrome.setSystemUIOverlayStyle(appSystemUiOverlayStyle);
 
-  runApp(LiquidGlassWidgets.wrap(child: const App()));
+  runApp(
+    LiquidGlassWidgets.wrap(child: const App()),
+  );
 }

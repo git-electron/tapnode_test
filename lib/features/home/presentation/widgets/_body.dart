@@ -60,10 +60,14 @@ class _ContentScrollFade extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                context.colors.white.withValues(alpha: .9),
-                context.colors.white.withValues(alpha: .9),
-                context.colors.white.withValues(alpha: 0),
+                context.colors.background,
+                context.colors.background.withValues(alpha: .9),
+                context.colors.background.withValues(alpha: .75),
+                context.colors.background.withValues(alpha: .5),
+                context.colors.background.withValues(alpha: .25),
+                context.colors.background.withValues(alpha: 0),
               ],
+              // stops: const [.5, 1],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
