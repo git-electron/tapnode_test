@@ -17,6 +17,8 @@ part 'widgets/_app_bar.dart';
 part 'widgets/_body.dart';
 part 'widgets/content/_content.dart';
 part 'widgets/content/_documents_list.dart';
+part 'widgets/content/_documents_not_found_placeholder.dart';
+part 'widgets/content/_empty_placeholder.dart';
 part 'widgets/content/_filters_tab_bar.dart';
 part 'widgets/floating_actions/_add_document_popup_actions.dart';
 part 'widgets/floating_actions/_add_document_popup_title.dart';
@@ -63,7 +65,8 @@ class HomeScreen extends StatelessWidget {
             create: (_) => $<FloatingActionsBloc>(),
           ),
           BlocProvider(
-            create: (_) => $<DocumentsBloc>()..add(const DocumentsEvent.started()),
+            create: (_) =>
+                $<DocumentsBloc>()..add(const DocumentsEvent.started()),
           ),
         ],
         child: const Column(
