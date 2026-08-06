@@ -3,107 +3,130 @@ part of '../../home_screen.dart';
 class _AddDocumentButton extends StatelessWidget {
   const _AddDocumentButton();
 
-  static const _height = 61.0;
-  static const _expandedWidth = 178.0;
-  static const _collapsedWidth = 61.0;
-  static const _searchCloseSize = 48.0;
-  static const _animationDuration = Duration(milliseconds: 500);
+  static const height = 61.0;
+  static const expandedWidth = 178.0;
+  static const collapsedWidth = 61.0;
+  static const searchCloseSize = 48.0;
+  static const animationDuration = Duration(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
       builder: (context, state) {
+        return _AddDocumentButtonAnimator(
+          state: state,
+          onTap: () {
+            context.read<FloatingActionsBloc>().add(
+              _eventFor(state),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  FloatingActionsEvent _eventFor(FloatingActionsState state) {
+    if (state.isSearchOpen) {
+      return const FloatingActionsEvent.clearSearchAndClose();
+    }
+    if (state.isAddDocumentsPopupOpen) {
+      return const FloatingActionsEvent.closeAddDocumentsPopup();
+    }
+
+    return const FloatingActionsEvent.openAddDocumentsPopup();
+  }
+}
+
+class _AddDocumentButtonAnimator extends StatelessWidget {
+  const _AddDocumentButtonAnimator({
+    required this.state,
+    required this.onTap,
+  });
+
+  final FloatingActionsState state;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(end: _targetWidth(state)),
+      duration: _AddDocumentButton.animationDuration,
+      curve: Curves.easeOutExpo,
+      builder: (context, width, child) {
         return TweenAnimationBuilder<double>(
-          tween: Tween(
-            end: _targetWidth(state),
-          ),
-          duration: _animationDuration,
+          tween: Tween(end: _targetHeight(state)),
+          duration: _AddDocumentButton.animationDuration,
           curve: Curves.easeOutExpo,
-          builder: (context, width, child) {
+          builder: (context, height, child) {
             return TweenAnimationBuilder<double>(
-              tween: Tween(
-                end: _targetHeight(state),
-              ),
-              duration: _animationDuration,
+              tween: Tween(end: _activeProgress(state)),
+              duration: _AddDocumentButton.animationDuration,
               curve: Curves.easeOutExpo,
-              builder: (context, height, child) {
-                return TweenAnimationBuilder<double>(
-                  tween: Tween(
-                    end: _activeProgress(state),
-                  ),
-                  duration: _animationDuration,
-                  curve: Curves.easeOutExpo,
-                  builder: (context, progress, child) {
-                    return GlassButton.custom(
-                      height: height,
-                      width: width,
-                      label: 'Add Document',
-                      onTap: () {
-                        context.read<FloatingActionsBloc>().add(
-                          _eventFor(state),
-                        );
-                      },
-                      shape: const LiquidRoundedRectangle(borderRadius: 100),
-                      useOwnLayer: true,
-                      settings: LiquidGlassSettings.lerp(
-                        _solidSettings(context),
-                        const LiquidGlassSettings(),
-                        progress,
-                      ),
-                      interactionScale: .97,
-                      stretch: .28,
-                      resistance: .04,
-                      glowColor: context.colors.white,
-                      glowRadius: 1.2,
-                      glowOpacity: _lerp(.1, .3, progress),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Opacity(
-                            opacity: 1 - progress,
-                            child: Padding(
-                              padding: const Pad(
-                                vertical: 19,
-                                horizontal: 14,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const SizedBox.square(
-                                    dimension: 24,
-                                    child: Icon(
-                                      CupertinoIcons.add_circled_solid,
-                                    ),
-                                  ),
-                                  const Gap(8),
-                                  Text(
-                                    'Add Document',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: context.styles.header2,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Opacity(
-                            opacity: progress,
-                            child: const Icon(
-                              CupertinoIcons.xmark,
-                              size: 29,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+              builder: (context, progress, child) {
+                return _AddDocumentGlassButton(
+                  width: width,
+                  height: height,
+                  progress: progress,
+                  onTap: onTap,
                 );
               },
             );
           },
         );
       },
+    );
+  }
+
+  double _targetWidth(FloatingActionsState state) {
+    if (state.isSearchOpen) return _AddDocumentButton.searchCloseSize;
+    if (state.isAddDocumentsPopupOpen) return _AddDocumentButton.collapsedWidth;
+    return _AddDocumentButton.expandedWidth;
+  }
+
+  double _targetHeight(FloatingActionsState state) {
+    if (state.isSearchOpen) return _AddDocumentButton.searchCloseSize;
+    return _AddDocumentButton.height;
+  }
+
+  double _activeProgress(FloatingActionsState state) {
+    return state.isSearchOpen || state.isAddDocumentsPopupOpen ? 1 : 0;
+  }
+}
+
+class _AddDocumentGlassButton extends StatelessWidget {
+  const _AddDocumentGlassButton({
+    required this.width,
+    required this.height,
+    required this.progress,
+    required this.onTap,
+  });
+
+  final double width;
+  final double height;
+  final double progress;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassButton.custom(
+      height: height,
+      width: width,
+      label: 'Add Document',
+      onTap: onTap,
+      shape: const LiquidRoundedRectangle(borderRadius: 100),
+      useOwnLayer: true,
+      settings: LiquidGlassSettings.lerp(
+        _solidSettings(context),
+        const LiquidGlassSettings(),
+        progress,
+      ),
+      interactionScale: .97,
+      stretch: .28,
+      resistance: .04,
+      glowColor: context.colors.white,
+      glowRadius: 1.2,
+      glowOpacity: _addDocumentLerp(.1, .3, progress),
+      child: _AddDocumentButtonContent(progress: progress),
     );
   }
 
@@ -121,34 +144,76 @@ class _AddDocumentButton extends StatelessWidget {
       shadow: const [],
     );
   }
+}
 
-  double _targetWidth(FloatingActionsState state) {
-    if (state.isSearchOpen) return _searchCloseSize;
-    if (state.isAddDocumentsPopupOpen) return _collapsedWidth;
-    return _expandedWidth;
+class _AddDocumentButtonContent extends StatelessWidget {
+  const _AddDocumentButtonContent({
+    required this.progress,
+  });
+
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Opacity(
+          opacity: 1 - progress,
+          child: const _AddDocumentExpandedContent(),
+        ),
+        Opacity(
+          opacity: progress,
+          child: const _AddDocumentCloseIcon(),
+        ),
+      ],
+    );
   }
+}
 
-  double _targetHeight(FloatingActionsState state) {
-    if (state.isSearchOpen) return _searchCloseSize;
-    return _height;
+class _AddDocumentExpandedContent extends StatelessWidget {
+  const _AddDocumentExpandedContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const Pad(
+        vertical: 19,
+        horizontal: 14,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox.square(
+            dimension: 24,
+            child: Icon(CupertinoIcons.add_circled_solid),
+          ),
+          const Gap(8),
+          Text(
+            'Add Document',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.styles.header2,
+          ),
+        ],
+      ),
+    );
   }
+}
 
-  double _activeProgress(FloatingActionsState state) {
-    return state.isSearchOpen || state.isAddDocumentsPopupOpen ? 1 : 0;
+class _AddDocumentCloseIcon extends StatelessWidget {
+  const _AddDocumentCloseIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      CupertinoIcons.xmark,
+      size: 29,
+    );
   }
+}
 
-  FloatingActionsEvent _eventFor(FloatingActionsState state) {
-    if (state.isSearchOpen) {
-      return const FloatingActionsEvent.clearSearchAndClose();
-    }
-    if (state.isAddDocumentsPopupOpen) {
-      return const FloatingActionsEvent.closeAddDocumentsPopup();
-    }
-
-    return const FloatingActionsEvent.openAddDocumentsPopup();
-  }
-
-  double _lerp(double begin, double end, double progress) {
-    return begin + (end - begin) * progress;
-  }
+double _addDocumentLerp(double begin, double end, double progress) {
+  return begin + (end - begin) * progress;
 }
