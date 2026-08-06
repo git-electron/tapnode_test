@@ -99,25 +99,41 @@ class _Preview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (document.hasDoublePreviewImages) {
-      return Stack(
-        clipBehavior: Clip.none,
-        children: [
-          _ImagePreview(path: document.firstPreviewImagePath!),
-          Positioned(
-            left: 12,
-            child: Transform.rotate(
-              angle: 7.35 * pi / 180,
-              child: _ImagePreview(path: document.lastPreviewImagePath!),
+      return SizedBox(
+        height: 167,
+        width: 150,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            _ImagePreview(path: document.firstPreviewImagePath!),
+            Positioned(
+              left: 12,
+              child: Transform.rotate(
+                angle: 7.35 * pi / 180,
+                child: _ImagePreview(path: document.lastPreviewImagePath!),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
     if (document.hasSinglePreviewImage) {
-      return _ImagePreview(path: document.firstPreviewImagePath!);
+      return SizedBox(
+        height: 167,
+        width: 150,
+        child: Center(
+          child: _ImagePreview(path: document.firstPreviewImagePath!),
+        ),
+      );
     }
 
-    return const _ImagePreview.broken();
+    return const SizedBox(
+      height: 167,
+      width: 150,
+      child: Center(
+        child: _ImagePreview.broken(),
+      ),
+    );
   }
 }
 

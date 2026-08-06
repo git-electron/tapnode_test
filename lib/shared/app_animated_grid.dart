@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 
 typedef AppAnimatedGridIdOf<T, K extends Object> = K Function(T item);
-typedef AppAnimatedGridItemBuilder<T> =
-    Widget Function(BuildContext context, T item);
-typedef AppAnimatedGridItemHeightBuilder<T> =
-    double Function(BuildContext context, T item, double itemWidth);
+typedef AppAnimatedGridItemBuilder<T> = Widget Function(BuildContext context, T item);
+typedef AppAnimatedGridItemHeightBuilder<T> = double Function(BuildContext context, T item, double itemWidth);
 
 class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
   const AppAnimatedGrid({
@@ -46,8 +44,7 @@ class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
   State<AppAnimatedGrid<T, K>> createState() => _AppAnimatedGridState<T, K>();
 }
 
-class _AppAnimatedGridState<T, K extends Object>
-    extends State<AppAnimatedGrid<T, K>> {
+class _AppAnimatedGridState<T, K extends Object> extends State<AppAnimatedGrid<T, K>> {
   final List<_AppAnimatedGridEntry<T, K>> _entries = [];
   final List<Timer> _removeTimers = [];
 
@@ -81,9 +78,7 @@ class _AppAnimatedGridState<T, K extends Object>
   }
 
   void _syncItems(List<T> nextItems) {
-    final currentVisibleEntries = _entries
-        .where((entry) => !entry.removing)
-        .toList(growable: false);
+    final currentVisibleEntries = _entries.where((entry) => !entry.removing).toList(growable: false);
     final nextIds = nextItems.map(widget.idOf).toSet();
     final removingEntries = _entries.where((entry) => entry.removing).toList();
     final nextEntries = <_AppAnimatedGridEntry<T, K>>[];
@@ -143,16 +138,10 @@ class _AppAnimatedGridState<T, K extends Object>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final totalSpacing =
-            widget.crossAxisSpacing * (widget.crossAxisCount - 1);
-        final availableWidth =
-            constraints.maxWidth - widget.padding.horizontal - totalSpacing;
-        final itemWidth = availableWidth > 0
-            ? availableWidth / widget.crossAxisCount
-            : 0.0;
-        final visibleEntries = _entries
-            .where((entry) => !entry.removing)
-            .toList(growable: false);
+        final totalSpacing = widget.crossAxisSpacing * (widget.crossAxisCount - 1);
+        final availableWidth = constraints.maxWidth - widget.padding.horizontal - totalSpacing;
+        final itemWidth = availableWidth > 0 ? availableWidth / widget.crossAxisCount : 0.0;
+        final visibleEntries = _entries.where((entry) => !entry.removing).toList(growable: false);
         final rows = (visibleEntries.length / widget.crossAxisCount).ceil();
         final rowHeights = _rowHeights(
           context: context,
@@ -170,9 +159,7 @@ class _AppAnimatedGridState<T, K extends Object>
 
         return SingleChildScrollView(
           child: SizedBox(
-            height: contentHeight < constraints.maxHeight
-                ? constraints.maxHeight
-                : contentHeight,
+            height: contentHeight < constraints.maxHeight ? constraints.maxHeight : contentHeight,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -232,8 +219,7 @@ class _AppAnimatedGridState<T, K extends Object>
   }
 }
 
-class _AppAnimatedGridPositionedItem<T, K extends Object>
-    extends StatelessWidget {
+class _AppAnimatedGridPositionedItem<T, K extends Object> extends StatelessWidget {
   const _AppAnimatedGridPositionedItem({
     super.key,
     required this.entry,
@@ -253,9 +239,7 @@ class _AppAnimatedGridPositionedItem<T, K extends Object>
   Widget build(BuildContext context) {
     final column = entry.index % widget.crossAxisCount;
     final row = entry.index ~/ widget.crossAxisCount;
-    final rowHeight = row < rowHeights.length
-        ? rowHeights[row]
-        : itemWidth / widget.childAspectRatio;
+    final rowHeight = row < rowHeights.length ? rowHeights[row] : itemWidth / widget.childAspectRatio;
     final top = row < rowOffsets.length
         ? rowOffsets[row]
         : widget.padding.top + row * (rowHeight + widget.mainAxisSpacing);
@@ -263,8 +247,7 @@ class _AppAnimatedGridPositionedItem<T, K extends Object>
     return AnimatedPositioned(
       duration: widget.animationDuration,
       curve: widget.positionCurve,
-      left:
-          widget.padding.left + column * (itemWidth + widget.crossAxisSpacing),
+      left: widget.padding.left + column * (itemWidth + widget.crossAxisSpacing),
       top: top,
       width: itemWidth,
       height: rowHeight,

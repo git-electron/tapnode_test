@@ -31,9 +31,7 @@ class _DocumentsListState extends State<_DocumentsList> {
         );
       },
       itemBuilder: (context, document) {
-        final shouldFade =
-            _activeMenuDocumentId != null &&
-            _activeMenuDocumentId != document.id;
+        final shouldFade = _activeMenuDocumentId != null && _activeMenuDocumentId != document.id;
 
         return AnimatedOpacity(
           duration: const Duration(milliseconds: 180),
@@ -82,6 +80,7 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       fit: StackFit.expand,
       children: [
         Positioned(
@@ -179,14 +178,10 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
     required bool isLeftSide,
   }) {
     if (opensUp) {
-      return isLeftSide
-          ? GlassMenuAlignment.bottomLeft
-          : GlassMenuAlignment.bottomRight;
+      return isLeftSide ? GlassMenuAlignment.bottomLeft : GlassMenuAlignment.bottomRight;
     }
 
-    return isLeftSide
-        ? GlassMenuAlignment.topLeft
-        : GlassMenuAlignment.topRight;
+    return isLeftSide ? GlassMenuAlignment.topLeft : GlassMenuAlignment.topRight;
   }
 
   bool _shouldOpenMenuUp() {
@@ -252,9 +247,7 @@ class _DocumentMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive
-        ? CupertinoColors.systemRed
-        : context.colors.textPrimary;
+    final color = destructive ? CupertinoColors.systemRed : context.colors.textPrimary;
 
     return GlassMenuItem(
       height: 40,
