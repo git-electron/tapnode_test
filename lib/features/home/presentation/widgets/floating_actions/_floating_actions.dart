@@ -1,4 +1,4 @@
-part of '../home_screen.dart';
+part of '../../home_screen.dart';
 
 class _FloatingActions extends StatelessWidget {
   const _FloatingActions();

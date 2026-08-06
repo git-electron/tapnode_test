@@ -11,10 +11,10 @@ import '../../../shared/app_glass_button.dart';
 
 part 'widgets/_app_bar.dart';
 part 'widgets/_body.dart';
-part 'widgets/_content.dart';
-part 'widgets/_documents_list.dart';
-part 'widgets/_filters_tab_bar.dart';
-part 'widgets/_floating_actions.dart';
+part 'widgets/content/_content.dart';
+part 'widgets/content/_documents_list.dart';
+part 'widgets/content/_filters_tab_bar.dart';
+part 'widgets/floating_actions/_floating_actions.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
