@@ -7,12 +7,15 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentsBloc, DocumentsState>(
       builder: (context, state) {
-        if (state.hasNoDocuments) return const _EmptyPlaceholder();
-        if (state.hasNoVisibleDocumentsByFilters) {
-          return const _DocumentsNotFoundPlaceholder();
-        }
-
-        return _DocumentsList(documents: state.documents);
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            _DocumentsList(documents: state.documents),
+            if (state.hasNoDocuments) const _EmptyPlaceholder(),
+            if (state.hasNoVisibleDocumentsByFilters)
+              const _DocumentsNotFoundPlaceholder(),
+          ],
+        );
       },
     );
   }
