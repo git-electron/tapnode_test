@@ -43,7 +43,6 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: context.colors.background,
       statusBarStyle: GlassStatusBarStyle.light,
       settings: LiquidGlassSettings(
-        blur: 14,
         thickness: 28,
         refractiveIndex: 1.14,
         chromaticAberration: .18,
