@@ -37,7 +37,6 @@ class _TappableState extends State<Tappable> {
     if (!_enabled) return widget.child;
 
     return GestureDetector(
-      // behavior: HitTestBehavior.opaque,
       onTap: widget.onTap,
       onLongPress: widget.onLongTap,
       onTapUp: (_) => _setPressed(false),
