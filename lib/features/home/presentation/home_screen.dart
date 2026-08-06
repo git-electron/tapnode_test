@@ -72,7 +72,8 @@ class HomeScreen extends StatelessWidget {
             create: (_) => $<FloatingActionsBloc>(),
           ),
           BlocProvider(
-            create: (_) => $<DocumentsBloc>()..add(const DocumentsEvent.started()),
+            create: (_) =>
+                $<DocumentsBloc>()..add(const DocumentsEvent.started()),
           ),
         ],
         child: const Column(
