@@ -38,10 +38,10 @@ class _SearchButtonState extends State<_SearchButton> {
       listenWhen: (previous, current) =>
           previous.isSearchOpen != current.isSearchOpen,
       listener: _handleSearchOpenChanged,
-      child: BlocListener<FloatingActionsBloc, FloatingActionsState>(
+      child: BlocListener<DocumentsBloc, DocumentsState>(
         listenWhen: (previous, current) =>
-            previous.searchText != current.searchText,
-        listener: _handleSearchTextChanged,
+            previous.searchQuery != current.searchQuery,
+        listener: _syncControllerText,
         child: BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
           builder: (context, state) {
             return _SearchButtonLayout(
@@ -77,23 +77,13 @@ class _SearchButtonState extends State<_SearchButton> {
 
   void _syncControllerText(
     BuildContext context,
-    FloatingActionsState state,
+    DocumentsState state,
   ) {
-    if (_controller.text == state.searchText) return;
+    if (_controller.text == state.searchQuery) return;
 
     _controller.value = TextEditingValue(
-      text: state.searchText,
-      selection: TextSelection.collapsed(offset: state.searchText.length),
-    );
-  }
-
-  void _handleSearchTextChanged(
-    BuildContext context,
-    FloatingActionsState state,
-  ) {
-    _syncControllerText(context, state);
-    context.read<DocumentsBloc>().add(
-      DocumentsEvent.searchChanged(state.searchText),
+      text: state.searchQuery,
+      selection: TextSelection.collapsed(offset: state.searchQuery.length),
     );
   }
 
@@ -306,8 +296,8 @@ class _SearchTextField extends StatelessWidget {
       ),
       cursorColor: const Color(0xff0088FF),
       onChanged: (text) {
-        context.read<FloatingActionsBloc>().add(
-          FloatingActionsEvent.searchTextChanged(text),
+        context.read<DocumentsBloc>().add(
+          DocumentsEvent.searchChanged(text),
         );
       },
       onEditingComplete: () {

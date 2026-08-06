@@ -5,22 +5,18 @@ sealed class FloatingActionsEvent with _$FloatingActionsEvent {
   const factory FloatingActionsEvent.openAddDocumentsPopup() =
       _OpenAddDocumentsPopup;
 
-  const factory FloatingActionsEvent.openAddDocumentsPopupFromAppBar() =
-      _OpenAddDocumentsPopupFromAppBar;
+  const factory FloatingActionsEvent.openAddDocumentsPopupFromAppBar({
+    required bool shouldRestoreSearchAfterPopup,
+  }) = _OpenAddDocumentsPopupFromAppBar;
 
   const factory FloatingActionsEvent.closeAddDocumentsPopup() =
       _CloseAddDocumentsPopup;
 
-  const factory FloatingActionsEvent.dismissForAppBarMenu() =
-      _DismissForAppBarMenu;
+  const factory FloatingActionsEvent.dismissForAppBarMenu({
+    required bool shouldKeepSearchOpen,
+  }) = _DismissForAppBarMenu;
 
   const factory FloatingActionsEvent.openSearch() = _OpenSearch;
 
   const factory FloatingActionsEvent.closeSearch() = _CloseSearch;
-
-  const factory FloatingActionsEvent.searchTextChanged(String text) =
-      _SearchTextChanged;
-
-  const factory FloatingActionsEvent.clearSearchAndClose() =
-      _ClearSearchAndClose;
 }

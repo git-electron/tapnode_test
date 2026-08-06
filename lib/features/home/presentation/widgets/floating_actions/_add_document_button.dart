@@ -16,24 +16,33 @@ class _AddDocumentButton extends StatelessWidget {
         return _AddDocumentButtonAnimator(
           state: state,
           onTap: () {
-            context.read<FloatingActionsBloc>().add(
-              _eventFor(state),
-            );
+            _handleTap(context, state);
           },
         );
       },
     );
   }
 
-  FloatingActionsEvent _eventFor(FloatingActionsState state) {
+  void _handleTap(BuildContext context, FloatingActionsState state) {
     if (state.isSearchOpen) {
-      return const FloatingActionsEvent.clearSearchAndClose();
+      context.read<DocumentsBloc>().add(
+        const DocumentsEvent.searchChanged(''),
+      );
+      context.read<FloatingActionsBloc>().add(
+        const FloatingActionsEvent.closeSearch(),
+      );
+      return;
     }
     if (state.isAddDocumentsPopupOpen) {
-      return const FloatingActionsEvent.closeAddDocumentsPopup();
+      context.read<FloatingActionsBloc>().add(
+        const FloatingActionsEvent.closeAddDocumentsPopup(),
+      );
+      return;
     }
 
-    return const FloatingActionsEvent.openAddDocumentsPopup();
+    context.read<FloatingActionsBloc>().add(
+      const FloatingActionsEvent.openAddDocumentsPopup(),
+    );
   }
 }
 

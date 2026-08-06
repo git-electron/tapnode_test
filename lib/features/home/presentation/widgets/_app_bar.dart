@@ -147,8 +147,15 @@ class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
         ),
         _DropdownMenuItem(
           onTap: () {
+            final hasActiveSearch = context
+                .read<DocumentsBloc>()
+                .state
+                .searchQuery
+                .isNotEmpty;
             context.read<FloatingActionsBloc>().add(
-              const FloatingActionsEvent.openAddDocumentsPopupFromAppBar(),
+              FloatingActionsEvent.openAddDocumentsPopupFromAppBar(
+                shouldRestoreSearchAfterPopup: hasActiveSearch,
+              ),
             );
             _closeMenu();
           },
@@ -170,8 +177,15 @@ class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
           ),
           onPressed: () {
             FocusManager.instance.primaryFocus?.unfocus();
+            final hasActiveSearch = context
+                .read<DocumentsBloc>()
+                .state
+                .searchQuery
+                .isNotEmpty;
             context.read<FloatingActionsBloc>().add(
-              const FloatingActionsEvent.dismissForAppBarMenu(),
+              FloatingActionsEvent.dismissForAppBarMenu(
+                shouldKeepSearchOpen: hasActiveSearch,
+              ),
             );
             toggleMenu();
           },

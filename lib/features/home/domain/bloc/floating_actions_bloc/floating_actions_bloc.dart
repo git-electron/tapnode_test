@@ -16,8 +16,6 @@ class FloatingActionsBloc
     on<_DismissForAppBarMenu>(_onDismissForAppBarMenu);
     on<_OpenSearch>(_onOpenSearch);
     on<_CloseSearch>(_onCloseSearch);
-    on<_SearchTextChanged>(_onSearchTextChanged);
-    on<_ClearSearchAndClose>(_onClearSearchAndClose);
   }
 
   void _onOpenAddDocumentsPopup(
@@ -42,7 +40,7 @@ class FloatingActionsBloc
       state.copyWith(
         isAddDocumentsPopupOpen: true,
         isSearchOpen: false,
-        shouldRestoreSearchAfterPopup: state.searchText.isNotEmpty,
+        shouldRestoreSearchAfterPopup: event.shouldRestoreSearchAfterPopup,
         shouldFocusSearchOnOpen: false,
       ),
     );
@@ -69,7 +67,7 @@ class FloatingActionsBloc
     emit(
       state.copyWith(
         isAddDocumentsPopupOpen: false,
-        isSearchOpen: state.searchText.isNotEmpty,
+        isSearchOpen: event.shouldKeepSearchOpen,
         shouldRestoreSearchAfterPopup: false,
         shouldFocusSearchOnOpen: false,
       ),
@@ -97,27 +95,6 @@ class FloatingActionsBloc
     emit(
       state.copyWith(
         isSearchOpen: false,
-        shouldRestoreSearchAfterPopup: false,
-        shouldFocusSearchOnOpen: false,
-      ),
-    );
-  }
-
-  void _onSearchTextChanged(
-    _SearchTextChanged event,
-    Emitter<FloatingActionsState> emit,
-  ) {
-    emit(state.copyWith(searchText: event.text));
-  }
-
-  void _onClearSearchAndClose(
-    _ClearSearchAndClose event,
-    Emitter<FloatingActionsState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        isSearchOpen: false,
-        searchText: '',
         shouldRestoreSearchAfterPopup: false,
         shouldFocusSearchOnOpen: false,
       ),
