@@ -5,7 +5,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
-import '../../../data/repository/documents_repository.dart';
+import '../../../data/repository/delete_document/delete_document_repository.dart';
+import '../../../data/repository/toggle_document_signed/toggle_document_signed_repository.dart';
+import '../../../data/repository/watch_documents/watch_documents_repository.dart';
 import '../../model/document_model.dart';
 import '../../service/documents_filter/documents_filter_service.dart';
 import '../../service/documents_selection/documents_selection_service.dart';
@@ -18,12 +20,16 @@ part 'documents_bloc.freezed.dart';
 @injectable
 class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   DocumentsBloc({
-    required DocumentsRepository repository,
+    required WatchDocumentsRepository watchDocumentsRepository,
+    required ToggleDocumentSignedRepository toggleDocumentSignedRepository,
+    required DeleteDocumentRepository deleteDocumentRepository,
     required ImportDocumentUseCase importDocumentUseCase,
     required DocumentsFilterService filterService,
     required DocumentsSelectionService selectionService,
     required Logger logger,
-  }) : _repository = repository,
+  }) : _watchDocumentsRepository = watchDocumentsRepository,
+       _toggleDocumentSignedRepository = toggleDocumentSignedRepository,
+       _deleteDocumentRepository = deleteDocumentRepository,
        _importDocumentUseCase = importDocumentUseCase,
        _filterService = filterService,
        _selectionService = selectionService,
@@ -44,7 +50,9 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     on<_ImportRequested>(_onImportRequested);
   }
 
-  final DocumentsRepository _repository;
+  final WatchDocumentsRepository _watchDocumentsRepository;
+  final ToggleDocumentSignedRepository _toggleDocumentSignedRepository;
+  final DeleteDocumentRepository _deleteDocumentRepository;
   final ImportDocumentUseCase _importDocumentUseCase;
   final DocumentsFilterService _filterService;
   final DocumentsSelectionService _selectionService;
@@ -65,7 +73,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   ) async {
     await _subscription?.cancel();
 
-    _subscription = _repository.watchDocuments().listen(
+    _subscription = _watchDocumentsRepository().listen(
       (documents) {
         add(DocumentsEvent.documentsChanged(documents));
       },
@@ -174,7 +182,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     Emitter<DocumentsState> emit,
   ) async {
     try {
-      await _repository.toggleDocumentSigned(event.id);
+      await _toggleDocumentSignedRepository(event.id);
     } on Object catch (error, stackTrace) {
       _logger.e(
         'Documents bloc: toggle signed failed',
@@ -192,7 +200,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(state.copyWith(loading: true, error: null));
 
     try {
-      await _repository.deleteDocument(event.id);
+      await _deleteDocumentRepository(event.id);
       final selectedIds = _selectionService.remove(state.selectedIds, event.id);
       emit(
         state.copyWith(
@@ -227,7 +235,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
 
     try {
       for (final id in ids) {
-        await _repository.deleteDocument(id);
+        await _deleteDocumentRepository(id);
       }
 
       emit(

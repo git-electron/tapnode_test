@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../domain/model/document_model.dart';
-import '../database/home_database.dart';
-import 'documents_repository.dart';
+import '../../../domain/model/document_model.dart';
+import '../../database/home_database.dart';
+import 'delete_document_repository.dart';
 
-@lazySingleton
-class DocumentsRepositoryImpl implements DocumentsRepository {
-  const DocumentsRepositoryImpl(
+@LazySingleton(as: DeleteDocumentRepository)
+class DeleteDocumentRepositoryImpl implements DeleteDocumentRepository {
+  const DeleteDocumentRepositoryImpl(
     this._database,
     this._logger,
   );
@@ -20,65 +19,7 @@ class DocumentsRepositoryImpl implements DocumentsRepository {
   final Logger _logger;
 
   @override
-  Stream<List<DocumentModel>> watchDocuments() {
-    final query = _database.select(_database.documents)
-      ..orderBy([
-        (table) => OrderingTerm.desc(table.createdAt),
-      ]);
-
-    return query.watch().asyncMap(_mapRowsToModels);
-  }
-
-  @override
-  Future<DocumentModel> addDocument(DocumentModel document) async {
-    _logger.i(
-      'Documents repository: inserting document '
-      'title=${document.title}, filePath=${document.filePath}, '
-      'previews=${document.previewImagePaths.length}',
-    );
-    final id = await _database
-        .into(_database.documents)
-        .insert(
-          DocumentsCompanion.insert(
-            title: document.title,
-            filePath: document.filePath,
-            createdAt: document.createdAt,
-            type: Value(document.type),
-            isSigned: Value(document.isSigned),
-            source: document.source,
-            pagePaths: Value(document.pagePaths),
-            previewImagePaths: Value(document.previewImagePaths),
-          ),
-        );
-
-    _logger.i('Documents repository: inserted document id=$id');
-    return document.copyWith(id: id);
-  }
-
-  @override
-  Future<void> toggleDocumentSigned(int id) async {
-    _logger.i('Documents repository: toggling signed state id=$id');
-    final document = await _documentById(id);
-    if (document == null) {
-      _logger.w('Documents repository: document id=$id not found');
-      return;
-    }
-
-    await (_database.update(
-      _database.documents,
-    )..where((row) => row.id.equals(id))).write(
-      DocumentsCompanion(
-        isSigned: Value(!document.isSigned),
-      ),
-    );
-    _logger.i(
-      'Documents repository: toggled signed state id=$id, '
-      'isSigned=${!document.isSigned}',
-    );
-  }
-
-  @override
-  Future<void> deleteDocument(int id) async {
+  Future<void> call(int id) async {
     _logger.i('Documents repository: deleting document id=$id');
     final document = await _documentById(id);
     if (document == null) {
@@ -99,7 +40,7 @@ class DocumentsRepositoryImpl implements DocumentsRepository {
     final row = await query.getSingleOrNull();
     if (row == null) return null;
 
-    return _mapRowToModel(row, await _appDocumentsDirectory());
+    return _mapRowToModel(row, await getApplicationDocumentsDirectory());
   }
 
   Future<void> _deleteDocumentFiles(DocumentModel document) async {
@@ -117,7 +58,7 @@ class DocumentsRepositoryImpl implements DocumentsRepository {
   }
 
   Future<List<String>> _managedDocumentDirectories() async {
-    final documentsDirectory = await _appDocumentsDirectory();
+    final documentsDirectory = await getApplicationDocumentsDirectory();
 
     return [
       '${documentsDirectory.path}/documents',
@@ -150,18 +91,6 @@ class DocumentsRepositoryImpl implements DocumentsRepository {
         stackTrace: stackTrace,
       );
     }
-  }
-
-  Future<List<DocumentModel>> _mapRowsToModels(List<Document> rows) async {
-    final documentsDirectory = await _appDocumentsDirectory();
-
-    return rows
-        .map((row) => _mapRowToModel(row, documentsDirectory))
-        .toList(growable: false);
-  }
-
-  Future<Directory> _appDocumentsDirectory() {
-    return getApplicationDocumentsDirectory();
   }
 
   DocumentModel _mapRowToModel(Document row, Directory documentsDirectory) {
