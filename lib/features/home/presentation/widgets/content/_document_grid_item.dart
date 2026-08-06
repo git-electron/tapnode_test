@@ -13,7 +13,7 @@ class _DocumentGridItem extends StatelessWidget {
           _Preview(document: document),
           Gap(document.hasDoublePreviewImages ? 7 : 15),
           Text(document.title),
-          Text(document.createdAt.toIso8601String()),
+          Text(document.createdAt.formattedDate),
         ],
       ),
     );
