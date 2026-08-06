@@ -105,12 +105,12 @@ class _Preview extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            _ImagePreview(path: document.firstPreviewImagePath!),
+            _ImagePreview(path: document.lastPreviewImagePath!),
             Positioned(
               left: 12,
               child: Transform.rotate(
                 angle: 7.35 * pi / 180,
-                child: _ImagePreview(path: document.lastPreviewImagePath!),
+                child: _ImagePreview(path: document.firstPreviewImagePath!),
               ),
             ),
           ],

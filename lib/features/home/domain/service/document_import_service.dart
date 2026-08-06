@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 import '../model/document_model.dart';
 import 'pdf_preview_service.dart';
@@ -45,9 +48,16 @@ class DefaultDocumentImportService implements DocumentImportService {
 
   @override
   Future<DocumentImportDraft?> pickFromGallery() async {
-    // TODO: Wire gallery picker. Gallery imports intentionally skip PDF preview
-    // generation because the imported image is already the visual preview.
-    return null;
+    _logger.i('Document import: opening gallery image picker');
+    final imagePath = await _pickGalleryImagePath();
+    if (imagePath == null) {
+      _logger.i('Document import: gallery image picker cancelled');
+      return null;
+    }
+
+    _logger.i('Document import: picked gallery image: $imagePath');
+
+    return _buildGalleryImageDraft(imagePath);
   }
 
   @override
@@ -84,12 +94,7 @@ class DefaultDocumentImportService implements DocumentImportService {
   }
 
   Future<String> _copyPdfToDocumentsDirectory(String pdfPath) async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    final importsDirectory = Directory('${documentsDirectory.path}/documents');
-
-    if (!importsDirectory.existsSync()) {
-      await importsDirectory.create(recursive: true);
-    }
+    final importsDirectory = await _documentsDirectory();
 
     final outputPath = _uniqueImportedPdfPath(importsDirectory, pdfPath);
 
@@ -101,6 +106,72 @@ class DefaultDocumentImportService implements DocumentImportService {
     );
 
     return copiedFile.path;
+  }
+
+  Future<DocumentImportDraft> _buildGalleryImageDraft(String imagePath) async {
+    final documentsDirectory = await _documentsDirectory();
+    final previewDirectory = await _previewDirectory();
+    final imageExtension = _imageExtensionFromPath(imagePath);
+    final pdfPath = _uniqueImportedPath(
+      directory: documentsDirectory,
+      sourcePath: 'Photo.pdf',
+      extension: '.pdf',
+    );
+    final previewPath = _uniqueImportedPath(
+      directory: previewDirectory,
+      sourcePath: 'Photo$imageExtension',
+      extension: imageExtension,
+    );
+
+    _logger.i('Document import: copying gallery image preview: $previewPath');
+    final previewFile = await File(imagePath).copy(previewPath);
+    _logger.i(
+      'Document import: copied gallery preview exists=${previewFile.existsSync()}, '
+      'size=${previewFile.lengthSync()} bytes',
+    );
+
+    await _createPdfFromImage(
+      imagePath: previewFile.path,
+      pdfPath: pdfPath,
+    );
+
+    return DocumentImportDraft(
+      title: _titleFromPath(pdfPath),
+      filePath: pdfPath,
+      source: DocumentImportSource.gallery,
+      previewImagePaths: [previewFile.path],
+    );
+  }
+
+  Future<void> _createPdfFromImage({
+    required String imagePath,
+    required String pdfPath,
+  }) async {
+    _logger.i('Document import: creating PDF from image: $pdfPath');
+    final imageBytes = await File(imagePath).readAsBytes();
+    final pdf = pw.Document();
+    final image = pw.MemoryImage(imageBytes);
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.zero,
+        build: (context) {
+          return pw.Center(
+            child: pw.Image(
+              image,
+            ),
+          );
+        },
+      ),
+    );
+
+    final pdfFile = File(pdfPath);
+    await pdfFile.writeAsBytes(await pdf.save(), flush: true);
+    _logger.i(
+      'Document import: created gallery PDF exists=${pdfFile.existsSync()}, '
+      'size=${pdfFile.lengthSync()} bytes',
+    );
   }
 
   Future<List<String>> _generatePreviewImagePaths(String pdfPath) async {
@@ -127,6 +198,16 @@ class DefaultDocumentImportService implements DocumentImportService {
     return result?.files.single.path;
   }
 
+  Future<String?> _pickGalleryImagePath() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 100,
+      requestFullMetadata: false,
+    );
+
+    return image?.path;
+  }
+
   Future<String?> _scanPdfPathWithCunningDocumentScanner() async {
     return null;
   }
@@ -141,9 +222,20 @@ class DefaultDocumentImportService implements DocumentImportService {
   }
 
   String _uniqueImportedPdfPath(Directory directory, String sourcePath) {
+    return _uniqueImportedPath(
+      directory: directory,
+      sourcePath: sourcePath,
+      extension: _extensionFromPath(sourcePath),
+    );
+  }
+
+  String _uniqueImportedPath({
+    required Directory directory,
+    required String sourcePath,
+    required String extension,
+  }) {
     final title = _titleFromPath(sourcePath).trim();
     final baseName = title.isEmpty ? 'Document' : title;
-    final extension = _extensionFromPath(sourcePath);
     var candidatePath = '${directory.path}/$baseName$extension';
 
     if (!File(candidatePath).existsSync()) return candidatePath;
@@ -171,5 +263,38 @@ class DefaultDocumentImportService implements DocumentImportService {
     }
 
     return fileName.substring(extensionIndex);
+  }
+
+  String _imageExtensionFromPath(String path) {
+    final extension = _extensionFromPath(path).toLowerCase();
+    if (extension == '.jpg' ||
+        extension == '.jpeg' ||
+        extension == '.png' ||
+        extension == '.webp') {
+      return extension;
+    }
+
+    return '.jpg';
+  }
+
+  Future<Directory> _documentsDirectory() async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+
+    return _ensureDirectory('${documentsDirectory.path}/documents');
+  }
+
+  Future<Directory> _previewDirectory() async {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+
+    return _ensureDirectory('${documentsDirectory.path}/document_previews');
+  }
+
+  Future<Directory> _ensureDirectory(String path) async {
+    final directory = Directory(path);
+    if (!directory.existsSync()) {
+      await directory.create(recursive: true);
+    }
+
+    return directory;
   }
 }
