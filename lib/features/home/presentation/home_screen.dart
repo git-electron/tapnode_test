@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_route/auto_route.dart';
@@ -17,18 +18,19 @@ import '../domain/bloc/documents_bloc/documents_bloc.dart';
 import '../domain/bloc/floating_actions_bloc/floating_actions_bloc.dart';
 import '../domain/model/document_model.dart';
 
-part 'widgets/_app_bar.dart';
 part 'widgets/_body.dart';
+part 'widgets/_app_bar.dart';
 part 'widgets/content/_content.dart';
 part 'widgets/content/_documents_list.dart';
-part 'widgets/content/_documents_not_found_placeholder.dart';
-part 'widgets/content/_empty_placeholder.dart';
 part 'widgets/content/_filters_tab_bar.dart';
-part 'widgets/floating_actions/_add_document_popup_actions.dart';
-part 'widgets/floating_actions/_add_document_popup_title.dart';
-part 'widgets/floating_actions/_add_document_button.dart';
-part 'widgets/floating_actions/_floating_actions.dart';
+part 'widgets/content/_empty_placeholder.dart';
+part 'widgets/content/_document_grid_item.dart';
+part 'widgets/content/_documents_not_found_placeholder.dart';
 part 'widgets/floating_actions/_search_button.dart';
+part 'widgets/floating_actions/_floating_actions.dart';
+part 'widgets/floating_actions/_add_document_button.dart';
+part 'widgets/floating_actions/_add_document_popup_title.dart';
+part 'widgets/floating_actions/_add_document_popup_actions.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
@@ -69,8 +71,7 @@ class HomeScreen extends StatelessWidget {
             create: (_) => $<FloatingActionsBloc>(),
           ),
           BlocProvider(
-            create: (_) =>
-                $<DocumentsBloc>()..add(const DocumentsEvent.started()),
+            create: (_) => $<DocumentsBloc>()..add(const DocumentsEvent.started()),
           ),
         ],
         child: const Column(

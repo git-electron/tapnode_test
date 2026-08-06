@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+
 import '../../features/home/presentation/home_screen.dart';
 
 part 'app_router.gr.dart';
