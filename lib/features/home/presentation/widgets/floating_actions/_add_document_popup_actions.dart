@@ -15,14 +15,17 @@ class _AddDocumentPopupActions extends StatelessWidget {
     _AddDocumentPopupAction(
       label: 'Files',
       icon: Assets.images.files.image(fit: BoxFit.cover),
+      event: const DocumentsEvent.importFromFilesRequested(),
     ),
     _AddDocumentPopupAction(
       label: 'Photos',
       icon: Assets.images.gallery.image(fit: BoxFit.cover),
+      event: const DocumentsEvent.importFromGalleryRequested(),
     ),
     _AddDocumentPopupAction(
       label: 'Scanner',
       icon: Assets.images.camera.image(fit: BoxFit.cover),
+      event: const DocumentsEvent.importFromScannerRequested(),
     ),
   ];
 
@@ -37,7 +40,9 @@ class _AddDocumentPopupActions extends StatelessWidget {
             ignoring: !state.isAddDocumentsPopupOpen,
             child: TweenAnimationBuilder<double>(
               tween: Tween(end: state.isAddDocumentsPopupOpen ? 1 : 0),
-              duration: state.isAddDocumentsPopupOpen ? _openDuration : _closeDuration,
+              duration: state.isAddDocumentsPopupOpen
+                  ? _openDuration
+                  : _closeDuration,
               builder: (context, progress, child) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -50,7 +55,8 @@ class _AddDocumentPopupActions extends StatelessWidget {
                         progress: progress,
                         isOpen: state.isAddDocumentsPopupOpen,
                       ),
-                      if (indexedAction.$1 != _actions.length - 1) const Gap(_gap),
+                      if (indexedAction.$1 != _actions.length - 1)
+                        const Gap(_gap),
                     ],
                   ],
                 );
@@ -99,6 +105,7 @@ class _AnimatedAddDocumentPopupAction extends StatelessWidget {
             icon: action.icon,
             label: action.label,
             onTap: () {
+              context.read<DocumentsBloc>().add(action.event);
               context.read<FloatingActionsBloc>().add(
                 const FloatingActionsEvent.closeAddDocumentsPopup(),
               );
@@ -124,10 +131,12 @@ class _AddDocumentPopupAction {
   const _AddDocumentPopupAction({
     required this.label,
     required this.icon,
+    required this.event,
   });
 
   final String label;
   final Widget icon;
+  final DocumentsEvent event;
 }
 
 double _addDocumentPopupLerp(double begin, double end, double progress) {

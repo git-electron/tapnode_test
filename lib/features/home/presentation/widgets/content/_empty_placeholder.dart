@@ -31,13 +31,21 @@ class _EmptyPlaceholder extends StatelessWidget {
               AppGlassButton(
                 label: 'Files',
                 icon: Assets.images.files.image(),
-                onTap: () {},
+                onTap: () {
+                  context.read<DocumentsBloc>().add(
+                    const DocumentsEvent.importFromFilesRequested(),
+                  );
+                },
               ),
               const Gap(12),
               AppGlassButton(
                 label: 'Photos',
                 icon: Assets.images.gallery.image(),
-                onTap: () {},
+                onTap: () {
+                  context.read<DocumentsBloc>().add(
+                    const DocumentsEvent.importFromGalleryRequested(),
+                  );
+                },
               ),
             ],
           ),
@@ -45,7 +53,11 @@ class _EmptyPlaceholder extends StatelessWidget {
           AppGlassButton(
             label: 'Scanner',
             icon: Assets.images.camera.image(),
-            onTap: () {},
+            onTap: () {
+              context.read<DocumentsBloc>().add(
+                const DocumentsEvent.importFromScannerRequested(),
+              );
+            },
           ),
           const Spacer(flex: 3),
         ],
