@@ -8,6 +8,9 @@ abstract interface class DocumentsRepository {
   Stream<List<DocumentModel>> watchDocuments();
 
   Future<DocumentModel> addDocument(DocumentModel document);
+
+  // TODO: remove
+  Future<void> deleteAllDocuments();
 }
 
 @LazySingleton(as: DocumentsRepository)
@@ -46,6 +49,12 @@ class DriftDocumentsRepository implements DocumentsRepository {
         );
 
     return document.copyWith(id: id);
+  }
+
+  // TODO: remove
+  @override
+  Future<void> deleteAllDocuments() async {
+    await _database.delete(_database.documents).go();
   }
 
   DocumentModel _mapRowToModel(Document row) {

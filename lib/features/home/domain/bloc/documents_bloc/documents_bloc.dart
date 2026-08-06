@@ -29,6 +29,8 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     on<_DocumentSelectionToggled>(_onDocumentSelectionToggled);
     on<_SelectAll>(_onSelectAll);
     on<_DeselectAll>(_onDeselectAll);
+    // TODO: remove
+    on<_DeleteAllRequested>(_onDeleteAllRequested);
     on<_ImportFromFilesRequested>(_onImportFromFilesRequested);
     on<_ImportFromGalleryRequested>(_onImportFromGalleryRequested);
     on<_ImportFromScannerRequested>(_onImportFromScannerRequested);
@@ -160,6 +162,32 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
         selectedIds: const {},
       ),
     );
+  }
+
+  // TODO: remove
+  Future<void> _onDeleteAllRequested(
+    _DeleteAllRequested event,
+    Emitter<DocumentsState> emit,
+  ) async {
+    emit(state.copyWith(loading: true, error: null));
+
+    try {
+      await _repository.deleteAllDocuments();
+      emit(
+        state.copyWith(
+          loading: false,
+          selectionMode: false,
+          selectedIds: const {},
+        ),
+      );
+    } on Object catch (error) {
+      emit(
+        state.copyWith(
+          loading: false,
+          error: error.toString(),
+        ),
+      );
+    }
   }
 
   Future<void> _onImportFromFilesRequested(

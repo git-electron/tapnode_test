@@ -22,7 +22,14 @@ class _AppBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _Logo(),
-                _DropdownMenuButton(),
+                Row(
+                  spacing: 10,
+                  children: [
+                    // TODO: remove
+                    _DeleteAllDocumentsButton(),
+                    _DropdownMenuButton(),
+                  ],
+                ),
               ],
             ),
           ),
@@ -52,6 +59,32 @@ class _Logo extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// TODO: remove
+class _DeleteAllDocumentsButton extends StatelessWidget {
+  const _DeleteAllDocumentsButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassIconButton(
+      size: 38,
+      borderRadius: 15.2,
+      useOwnLayer: true,
+      settings: const LiquidGlassSettings(),
+      shape: GlassIconButtonShape.roundedSquare,
+      icon: Icon(
+        CupertinoIcons.trash,
+        color: context.colors.white,
+        size: 19.55,
+      ),
+      onPressed: () {
+        context.read<DocumentsBloc>().add(
+          const DocumentsEvent.deleteAllRequested(),
+        );
+      },
     );
   }
 }
