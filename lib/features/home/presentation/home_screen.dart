@@ -17,6 +17,7 @@ part 'widgets/content/_content.dart';
 part 'widgets/content/_documents_list.dart';
 part 'widgets/content/_filters_tab_bar.dart';
 part 'widgets/floating_actions/_add_document_popup_actions.dart';
+part 'widgets/floating_actions/_add_document_popup_title.dart';
 part 'widgets/floating_actions/_add_document_button.dart';
 part 'widgets/floating_actions/_floating_actions.dart';
 part 'widgets/floating_actions/_search_button.dart';

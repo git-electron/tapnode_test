@@ -29,11 +29,16 @@ class _FloatingActionButtons extends StatelessWidget {
       child: SafeArea(
         child: Padding(
           padding: Pad(all: 12),
-          child: Row(
+          child: Stack(
             children: [
-              _SearchButton(),
-              Gap(12),
-              _AddDocumentButton(),
+              _AddDocumentPopupTitle(),
+              Row(
+                children: [
+                  _SearchButton(),
+                  Gap(12),
+                  _AddDocumentButton(),
+                ],
+              ),
             ],
           ),
         ),

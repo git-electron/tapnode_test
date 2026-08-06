@@ -114,9 +114,9 @@ class _AnimatedAddDocumentPopupAction extends StatelessWidget {
     if (value >= 1) return 1;
 
     final shiftedValue = ((value - start) / (1 - start)).clamp(0.0, 1.0);
-    if (isOpen) return Curves.easeOutCubic.transform(shiftedValue);
+    if (isOpen) return Curves.easeOutExpo.transform(shiftedValue);
 
-    return 1 - Curves.easeOutCubic.transform(1 - shiftedValue);
+    return 1 - Curves.easeOutExpo.transform(1 - shiftedValue);
   }
 }
 
