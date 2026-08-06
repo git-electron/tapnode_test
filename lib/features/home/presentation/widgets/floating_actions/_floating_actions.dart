@@ -9,6 +9,7 @@ class _FloatingActions extends StatelessWidget {
       child: Stack(
         children: [
           _FloatingActionsBackdrop(),
+          _AddDocumentPopupActions(),
           _FloatingActionButtons(),
         ],
       ),
