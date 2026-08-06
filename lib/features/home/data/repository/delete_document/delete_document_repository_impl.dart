@@ -5,18 +5,23 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../domain/model/document_model.dart';
+import '../../../domain/service/service.dart';
 import '../../database/home_database.dart';
 import 'delete_document_repository.dart';
 
 @LazySingleton(as: DeleteDocumentRepository)
 class DeleteDocumentRepositoryImpl implements DeleteDocumentRepository {
-  const DeleteDocumentRepositoryImpl(
-    this._database,
-    this._logger,
-  );
+  const DeleteDocumentRepositoryImpl({
+    required HomeDatabase database,
+    required Logger logger,
+    required DocumentFilesCleanerService filesCleaner,
+  }) : _database = database,
+       _logger = logger,
+       _filesCleaner = filesCleaner;
 
   final HomeDatabase _database;
   final Logger _logger;
+  final DocumentFilesCleanerService _filesCleaner;
 
   @override
   Future<void> call(int id) async {
@@ -27,7 +32,7 @@ class DeleteDocumentRepositoryImpl implements DeleteDocumentRepository {
       return;
     }
 
-    await _deleteDocumentFiles(document);
+    await _filesCleaner.deleteManagedFiles(document);
     await (_database.delete(
       _database.documents,
     )..where((row) => row.id.equals(id))).go();
@@ -41,56 +46,6 @@ class DeleteDocumentRepositoryImpl implements DeleteDocumentRepository {
     if (row == null) return null;
 
     return _mapRowToModel(row, await getApplicationDocumentsDirectory());
-  }
-
-  Future<void> _deleteDocumentFiles(DocumentModel document) async {
-    final managedDirectories = await _managedDocumentDirectories();
-    final paths = {
-      document.filePath,
-      ...document.pagePaths,
-      ...document.previewImagePaths,
-    };
-
-    for (final path in paths) {
-      if (!_isManagedPath(path, managedDirectories)) continue;
-      await _deleteFile(path);
-    }
-  }
-
-  Future<List<String>> _managedDocumentDirectories() async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-
-    return [
-      '${documentsDirectory.path}/documents',
-      '${documentsDirectory.path}/document_previews',
-    ];
-  }
-
-  bool _isManagedPath(String path, List<String> managedDirectories) {
-    final normalizedPath = path.replaceAll(r'\', '/');
-
-    return managedDirectories.any((directory) {
-      final normalizedDirectory = directory.replaceAll(r'\', '/');
-
-      return normalizedPath == normalizedDirectory ||
-          normalizedPath.startsWith('$normalizedDirectory/');
-    });
-  }
-
-  Future<void> _deleteFile(String path) async {
-    final file = File(path);
-    if (!file.existsSync()) return;
-
-    try {
-      await file.delete();
-      _logger.i('Documents repository: deleted local file: $path');
-    } on Object catch (error, stackTrace) {
-      _logger.w(
-        'Documents repository: failed to delete local file: $path',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
   }
 
   DocumentModel _mapRowToModel(Document row, Directory documentsDirectory) {
