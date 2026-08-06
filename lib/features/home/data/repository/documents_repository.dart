@@ -36,9 +36,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
         (table) => OrderingTerm.desc(table.createdAt),
       ]);
 
-    return query.watch().map(
-      (rows) => rows.map(_mapRowToModel).toList(growable: false),
-    );
+    return query.watch().asyncMap(_mapRowsToModels);
   }
 
   @override
@@ -87,7 +85,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
   @override
   Future<void> deleteAllDocuments() async {
     final documents = await _database.select(_database.documents).get();
-    for (final document in documents.map(_mapRowToModel)) {
+    for (final document in await _mapRowsToModels(documents)) {
       await _deleteDocumentFiles(document);
     }
     await _deleteManagedDirectoriesContent();
@@ -101,7 +99,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
     final row = await query.getSingleOrNull();
     if (row == null) return null;
 
-    return _mapRowToModel(row);
+    return _mapRowToModel(row, await _appDocumentsDirectory());
   }
 
   Future<void> _deleteDocumentFiles(DocumentModel document) async {
@@ -132,7 +130,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
   }
 
   Future<List<String>> _managedDocumentDirectories() async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final documentsDirectory = await _appDocumentsDirectory();
 
     return [
       '${documentsDirectory.path}/documents',
@@ -167,17 +165,59 @@ class DriftDocumentsRepository implements DocumentsRepository {
     }
   }
 
-  DocumentModel _mapRowToModel(Document row) {
+  Future<List<DocumentModel>> _mapRowsToModels(List<Document> rows) async {
+    final documentsDirectory = await _appDocumentsDirectory();
+
+    return rows
+        .map((row) => _mapRowToModel(row, documentsDirectory))
+        .toList(growable: false);
+  }
+
+  Future<Directory> _appDocumentsDirectory() {
+    return getApplicationDocumentsDirectory();
+  }
+
+  DocumentModel _mapRowToModel(Document row, Directory documentsDirectory) {
     return DocumentModel(
       id: row.id,
       title: row.title,
-      filePath: row.filePath,
+      filePath: _resolveManagedPath(row.filePath, documentsDirectory),
       createdAt: row.createdAt,
       type: row.type,
       isSigned: row.isSigned,
       source: row.source,
-      pagePaths: row.pagePaths,
-      previewImagePaths: row.previewImagePaths,
+      pagePaths: _resolveManagedPaths(row.pagePaths, documentsDirectory),
+      previewImagePaths: _resolveManagedPaths(
+        row.previewImagePaths,
+        documentsDirectory,
+      ),
     );
+  }
+
+  List<String> _resolveManagedPaths(
+    List<String> paths,
+    Directory documentsDirectory,
+  ) {
+    return paths
+        .map((path) => _resolveManagedPath(path, documentsDirectory))
+        .toList(growable: false);
+  }
+
+  String _resolveManagedPath(String path, Directory documentsDirectory) {
+    final normalizedPath = path.replaceAll(r'\', '/');
+
+    return switch (normalizedPath) {
+      final value when value.contains('/Documents/documents/') =>
+        '${documentsDirectory.path}/documents/${_fileName(value)}',
+      final value when value.contains('/Documents/document_previews/') =>
+        '${documentsDirectory.path}/document_previews/${_fileName(value)}',
+      _ => path,
+    };
+  }
+
+  String _fileName(String path) {
+    final normalizedPath = path.replaceAll(r'\', '/');
+
+    return normalizedPath.split('/').last;
   }
 }

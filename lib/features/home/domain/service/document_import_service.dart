@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cunning_document_scanner/cunning_document_scanner.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
@@ -62,10 +63,14 @@ class DefaultDocumentImportService implements DocumentImportService {
 
   @override
   Future<DocumentImportDraft?> scanWithCunningDocumentScanner() async {
-    // TODO: Wire cunning_document_scanner and pass produced PDF path into
-    // _buildPdfDraft.
+    _logger.i('Document import: opening cunning document scanner as PDF');
     final pdfPath = await _scanPdfPathWithCunningDocumentScanner();
-    if (pdfPath == null) return null;
+    if (pdfPath == null) {
+      _logger.i('Document import: scanner cancelled');
+      return null;
+    }
+
+    _logger.i('Document import: scanner PDF ready: $pdfPath');
 
     return _buildPdfDraft(
       pdfPath: pdfPath,
@@ -209,7 +214,13 @@ class DefaultDocumentImportService implements DocumentImportService {
   }
 
   Future<String?> _scanPdfPathWithCunningDocumentScanner() async {
-    return null;
+    final paths = await CunningDocumentScanner.getPictures(
+      scannerSource: ScannerSource.camera,
+      asPdf: true,
+    );
+    if (paths == null || paths.isEmpty) return null;
+
+    return paths.first;
   }
 
   String _titleFromPath(String path) {

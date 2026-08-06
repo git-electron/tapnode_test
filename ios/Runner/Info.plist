@@ -26,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Signica needs camera access to scan documents.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Signica needs access to your photo library to import images as PDF documents.</string>
 	<key>UIApplicationSceneManifest</key>
