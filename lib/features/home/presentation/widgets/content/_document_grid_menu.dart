@@ -90,6 +90,7 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
           onLongTap: widget.selectionMode ? null : _openMenu,
           child: _DocumentGridItem(
             document: widget.document,
+            selectionMode: widget.selectionMode,
             isSelected: widget.isSelected,
           ),
         ),
