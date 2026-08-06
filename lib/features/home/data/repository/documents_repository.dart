@@ -13,6 +13,8 @@ abstract interface class DocumentsRepository {
 
   Future<DocumentModel> addDocument(DocumentModel document);
 
+  Future<void> toggleDocumentSigned(int id);
+
   Future<void> deleteDocument(int id);
 
   // TODO: remove
@@ -63,6 +65,28 @@ class DriftDocumentsRepository implements DocumentsRepository {
 
     _logger.i('Documents repository: inserted document id=$id');
     return document.copyWith(id: id);
+  }
+
+  @override
+  Future<void> toggleDocumentSigned(int id) async {
+    _logger.i('Documents repository: toggling signed state id=$id');
+    final document = await _documentById(id);
+    if (document == null) {
+      _logger.w('Documents repository: document id=$id not found');
+      return;
+    }
+
+    await (_database.update(
+      _database.documents,
+    )..where((row) => row.id.equals(id))).write(
+      DocumentsCompanion(
+        isSigned: Value(!document.isSigned),
+      ),
+    );
+    _logger.i(
+      'Documents repository: toggled signed state id=$id, '
+      'isSigned=${!document.isSigned}',
+    );
   }
 
   @override

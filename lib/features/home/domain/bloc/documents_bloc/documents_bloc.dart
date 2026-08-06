@@ -32,6 +32,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     on<_DocumentSelectionToggled>(_onDocumentSelectionToggled);
     on<_SelectAll>(_onSelectAll);
     on<_DeselectAll>(_onDeselectAll);
+    on<_DocumentSignedToggled>(_onDocumentSignedToggled);
     on<_DeleteRequested>(_onDeleteRequested);
     // TODO: remove
     on<_DeleteAllRequested>(_onDeleteAllRequested);
@@ -167,6 +168,22 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
         selectedIds: const {},
       ),
     );
+  }
+
+  Future<void> _onDocumentSignedToggled(
+    _DocumentSignedToggled event,
+    Emitter<DocumentsState> emit,
+  ) async {
+    try {
+      await _repository.toggleDocumentSigned(event.id);
+    } on Object catch (error, stackTrace) {
+      _logger.e(
+        'Documents bloc: toggle signed failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      emit(state.copyWith(error: error.toString()));
+    }
   }
 
   Future<void> _onDeleteRequested(

@@ -82,6 +82,7 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
           ),
         ),
         Tappable(
+          onTap: _toggleSigned,
           onLongTap: _openMenu,
           child: _DocumentGridItem(document: widget.document),
         ),
@@ -161,6 +162,12 @@ class _DocumentGridMenuState extends State<_DocumentGridMenu> {
       DocumentsEvent.deleteRequested(widget.document.id),
     );
     _closeMenu();
+  }
+
+  void _toggleSigned() {
+    context.read<DocumentsBloc>().add(
+      DocumentsEvent.documentSignedToggled(widget.document.id),
+    );
   }
 
   void _closeMenu() {

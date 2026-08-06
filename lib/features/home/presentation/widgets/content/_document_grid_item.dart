@@ -7,42 +7,49 @@ class _DocumentGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tappable(
-      onTap: () {},
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final titleHasTwoLines = _titleHasTwoLines(
-            context: context,
-            maxWidth: constraints.maxWidth,
-          );
-          final height = titleHasTwoLines ? 240.0 : 224.0;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final titleHasTwoLines = _titleHasTwoLines(
+          context: context,
+          maxWidth: constraints.maxWidth,
+        );
+        final height = titleHasTwoLines ? 240.0 : 224.0;
 
-          return SizedBox(
-            height: height,
-            width: double.maxFinite,
-            child: Column(
-              children: [
-                _Preview(document: document),
-                const Gap(15),
-                Text(
-                  document.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: context.styles.header3,
-                ),
-                const Gap(4),
-                Text(
-                  document.createdAt.formattedDate,
-                  style: context.styles.text2.copyWith(
-                    color: context.colors.textSecondary,
+        return SizedBox(
+          height: height,
+          width: double.maxFinite,
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.bottomCenter,
+                children: [
+                  _Preview(document: document),
+                  Positioned(
+                    bottom: -10,
+                    child: _SignedMark(visible: document.isSigned),
                   ),
+                ],
+              ),
+              const Gap(15),
+              Text(
+                document.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: context.styles.header3,
+              ),
+              const Gap(4),
+              Text(
+                document.createdAt.formattedDate,
+                style: context.styles.text2.copyWith(
+                  color: context.colors.textSecondary,
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -54,6 +61,50 @@ class _DocumentGridItem extends StatelessWidget {
       context: context,
       title: document.title,
       maxWidth: maxWidth,
+    );
+  }
+}
+
+class _SignedMark extends StatelessWidget {
+  const _SignedMark({required this.visible});
+
+  final bool visible;
+
+  static const _duration = Duration(milliseconds: 220);
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        duration: _duration,
+        curve: Curves.easeOutCubic,
+        opacity: visible ? 1 : 0,
+        child: AnimatedScale(
+          duration: _duration,
+          curve: Curves.easeOutBack,
+          scale: visible ? 1 : .72,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: context.colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: context.colors.black.withValues(alpha: .08),
+                  blurRadius: 11,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: SizedBox.square(
+              dimension: 42,
+              child: Padding(
+                padding: const Pad(all: 8),
+                child: Assets.icons.signed.svg(),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
