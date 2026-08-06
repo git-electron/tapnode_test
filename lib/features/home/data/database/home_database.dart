@@ -9,7 +9,8 @@ part 'home_database.g.dart';
 
 @DriftDatabase(tables: [Documents])
 class HomeDatabase extends _$HomeDatabase {
-  HomeDatabase([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'signica_home'));
+  HomeDatabase([QueryExecutor? executor])
+    : super(executor ?? driftDatabase(name: 'signica_home'));
 
   @override
   int get schemaVersion => 1;
@@ -24,11 +25,18 @@ class Documents extends Table {
 
   TextColumn get type => text().withDefault(const Constant('PDF'))();
 
-  BoolColumn get isSigned => boolean().named('is_signed').withDefault(const Constant(false))();
+  BoolColumn get isSigned =>
+      boolean().named('is_signed').withDefault(const Constant(false))();
 
   TextColumn get source => textEnum<DocumentImportSource>()();
 
-  TextColumn get pagePaths => text().map(const StringListConverter()).withDefault(const Constant('[]'))();
+  TextColumn get pagePaths => text()
+      .map(const StringListConverter())
+      .withDefault(const Constant('[]'))();
+
+  TextColumn get previewImagePaths => text()
+      .map(const StringListConverter())
+      .withDefault(const Constant('[]'))();
 
   DateTimeColumn get createdAt => dateTime().named('created_at')();
 }

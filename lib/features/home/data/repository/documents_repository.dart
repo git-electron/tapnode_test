@@ -41,6 +41,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
             isSigned: Value(document.isSigned),
             source: document.source,
             pagePaths: Value(document.pagePaths),
+            previewImagePaths: Value(document.previewImagePaths),
           ),
         );
 
@@ -57,6 +58,7 @@ class DriftDocumentsRepository implements DocumentsRepository {
       isSigned: row.isSigned,
       source: row.source,
       pagePaths: row.pagePaths,
+      previewImagePaths: row.previewImagePaths,
     );
   }
 }

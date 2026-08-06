@@ -28,6 +28,7 @@ abstract class DocumentModel extends Equatable with _$DocumentModel {
     @Default(false) bool isSigned,
     @Default(DocumentImportSource.file) DocumentImportSource source,
     @Default([]) List<String> pagePaths,
+    @Default([]) List<String> previewImagePaths,
   }) = _DocumentModel;
 
   @override
@@ -40,6 +41,7 @@ abstract class DocumentModel extends Equatable with _$DocumentModel {
     isSigned,
     source,
     pagePaths,
+    previewImagePaths,
   ];
 }
 
@@ -54,6 +56,7 @@ abstract class DocumentImportDraft extends Equatable
     required DocumentImportSource source,
     @Default('PDF') String type,
     @Default([]) List<String> pagePaths,
+    @Default([]) List<String> previewImagePaths,
   }) = _DocumentImportDraft;
 
   DocumentModel toDocumentModel({DateTime? createdAt}) {
@@ -65,6 +68,7 @@ abstract class DocumentImportDraft extends Equatable
       type: type,
       source: source,
       pagePaths: pagePaths,
+      previewImagePaths: previewImagePaths,
     );
   }
 
@@ -75,5 +79,6 @@ abstract class DocumentImportDraft extends Equatable
     source,
     type,
     pagePaths,
+    previewImagePaths,
   ];
 }
