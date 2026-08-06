@@ -19,6 +19,7 @@ class _EmptyPlaceholder extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const Spacer(flex: 2),
           Assets.images.emptyPlaceholder.image(height: 160),
           const Gap(18),
           Text(
@@ -29,7 +30,7 @@ class _EmptyPlaceholder extends StatelessWidget {
           Text(
             'Your can add documents from',
             style: context.styles.text1.copyWith(
-              color: const Color(0xff303030).withValues(alpha: .3),
+              color: const Color(0xff303030).withValues(alpha: .4),
             ),
           ),
           const Gap(18),
@@ -55,6 +56,7 @@ class _EmptyPlaceholder extends StatelessWidget {
             icon: Assets.images.camera.image(),
             onTap: () {},
           ),
+          const Spacer(flex: 3),
         ],
       ),
     );
