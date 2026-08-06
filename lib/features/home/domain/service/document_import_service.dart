@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:injectable/injectable.dart';
 
 import '../model/document_model.dart';
@@ -19,7 +20,6 @@ class StubDocumentImportService implements DocumentImportService {
 
   @override
   Future<DocumentImportDraft?> pickFromFiles() async {
-    // TODO: Wire file picker and pass selected PDF path into _buildPdfDraft.
     final pdfPath = await _pickPdfFilePath();
     if (pdfPath == null) return null;
 
@@ -64,7 +64,12 @@ class StubDocumentImportService implements DocumentImportService {
   }
 
   Future<String?> _pickPdfFilePath() async {
-    return null;
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['pdf'],
+    );
+
+    return result?.files.single.path;
   }
 
   Future<String?> _scanPdfPathWithCunningDocumentScanner() async {
