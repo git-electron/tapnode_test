@@ -10,73 +10,117 @@ part 'floating_actions_state.dart';
 class FloatingActionsBloc
     extends Bloc<FloatingActionsEvent, FloatingActionsState> {
   FloatingActionsBloc() : super(const FloatingActionsState()) {
-    on<FloatingActionsEvent>((event, emit) {
-      switch (event) {
-        case _OpenAddDocumentsPopup():
-          emit(
-            state.copyWith(
-              isAddDocumentsPopupOpen: true,
-              isSearchOpen: false,
-              shouldRestoreSearchAfterPopup: false,
-              shouldFocusSearchOnOpen: false,
-            ),
-          );
-        case _OpenAddDocumentsPopupFromAppBar():
-          emit(
-            state.copyWith(
-              isAddDocumentsPopupOpen: true,
-              isSearchOpen: false,
-              shouldRestoreSearchAfterPopup: state.searchText.isNotEmpty,
-              shouldFocusSearchOnOpen: false,
-            ),
-          );
-        case _CloseAddDocumentsPopup():
-          emit(
-            state.copyWith(
-              isAddDocumentsPopupOpen: false,
-              isSearchOpen: state.shouldRestoreSearchAfterPopup,
-              shouldRestoreSearchAfterPopup: false,
-              shouldFocusSearchOnOpen: false,
-            ),
-          );
-        case _DismissForAppBarMenu():
-          emit(
-            state.copyWith(
-              isAddDocumentsPopupOpen: false,
-              isSearchOpen: state.searchText.isNotEmpty,
-              shouldRestoreSearchAfterPopup: false,
-              shouldFocusSearchOnOpen: false,
-            ),
-          );
-        case _OpenSearch():
-          emit(
-            state.copyWith(
-              isAddDocumentsPopupOpen: false,
-              isSearchOpen: true,
-              shouldRestoreSearchAfterPopup: false,
-              shouldFocusSearchOnOpen: true,
-            ),
-          );
-        case _CloseSearch():
-          emit(
-            state.copyWith(
-              isSearchOpen: false,
-              shouldRestoreSearchAfterPopup: false,
-              shouldFocusSearchOnOpen: false,
-            ),
-          );
-        case _SearchTextChanged(:final text):
-          emit(state.copyWith(searchText: text));
-        case _ClearSearchAndClose():
-          emit(
-            state.copyWith(
-              isSearchOpen: false,
-              searchText: '',
-              shouldRestoreSearchAfterPopup: false,
-              shouldFocusSearchOnOpen: false,
-            ),
-          );
-      }
-    });
+    on<_OpenAddDocumentsPopup>(_onOpenAddDocumentsPopup);
+    on<_OpenAddDocumentsPopupFromAppBar>(_onOpenAddDocumentsPopupFromAppBar);
+    on<_CloseAddDocumentsPopup>(_onCloseAddDocumentsPopup);
+    on<_DismissForAppBarMenu>(_onDismissForAppBarMenu);
+    on<_OpenSearch>(_onOpenSearch);
+    on<_CloseSearch>(_onCloseSearch);
+    on<_SearchTextChanged>(_onSearchTextChanged);
+    on<_ClearSearchAndClose>(_onClearSearchAndClose);
+  }
+
+  void _onOpenAddDocumentsPopup(
+    _OpenAddDocumentsPopup event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isAddDocumentsPopupOpen: true,
+        isSearchOpen: false,
+        shouldRestoreSearchAfterPopup: false,
+        shouldFocusSearchOnOpen: false,
+      ),
+    );
+  }
+
+  void _onOpenAddDocumentsPopupFromAppBar(
+    _OpenAddDocumentsPopupFromAppBar event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isAddDocumentsPopupOpen: true,
+        isSearchOpen: false,
+        shouldRestoreSearchAfterPopup: state.searchText.isNotEmpty,
+        shouldFocusSearchOnOpen: false,
+      ),
+    );
+  }
+
+  void _onCloseAddDocumentsPopup(
+    _CloseAddDocumentsPopup event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isAddDocumentsPopupOpen: false,
+        isSearchOpen: state.shouldRestoreSearchAfterPopup,
+        shouldRestoreSearchAfterPopup: false,
+        shouldFocusSearchOnOpen: false,
+      ),
+    );
+  }
+
+  void _onDismissForAppBarMenu(
+    _DismissForAppBarMenu event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isAddDocumentsPopupOpen: false,
+        isSearchOpen: state.searchText.isNotEmpty,
+        shouldRestoreSearchAfterPopup: false,
+        shouldFocusSearchOnOpen: false,
+      ),
+    );
+  }
+
+  void _onOpenSearch(
+    _OpenSearch event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isAddDocumentsPopupOpen: false,
+        isSearchOpen: true,
+        shouldRestoreSearchAfterPopup: false,
+        shouldFocusSearchOnOpen: true,
+      ),
+    );
+  }
+
+  void _onCloseSearch(
+    _CloseSearch event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isSearchOpen: false,
+        shouldRestoreSearchAfterPopup: false,
+        shouldFocusSearchOnOpen: false,
+      ),
+    );
+  }
+
+  void _onSearchTextChanged(
+    _SearchTextChanged event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(state.copyWith(searchText: event.text));
+  }
+
+  void _onClearSearchAndClose(
+    _ClearSearchAndClose event,
+    Emitter<FloatingActionsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        isSearchOpen: false,
+        searchText: '',
+        shouldRestoreSearchAfterPopup: false,
+        shouldFocusSearchOnOpen: false,
+      ),
+    );
   }
 }

@@ -20,83 +20,18 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   }) : _repository = repository,
        _importService = importService,
        super(const DocumentsState()) {
-    on<DocumentsEvent>((event, emit) async {
-      switch (event) {
-        case _Started():
-          await _onStarted();
-        case _DocumentsChanged(:final documents):
-          _allDocuments = documents;
-          final selectedIds = _sanitizeSelectedIds(state.selectedIds);
-
-          emit(
-            state.copyWith(
-              documents: _applyFilters(),
-              selectedIds: selectedIds,
-              selectionMode: selectedIds.isNotEmpty,
-            ),
-          );
-        case _SearchChanged(:final query):
-          emit(
-            state.copyWith(
-              searchQuery: query,
-              documents: _applyFilters(searchQuery: query),
-            ),
-          );
-        case _FilterChanged(:final filter):
-          emit(
-            state.copyWith(
-              filter: filter,
-              documents: _applyFilters(filter: filter),
-            ),
-          );
-        case _SelectionStarted():
-          emit(state.copyWith(selectionMode: true));
-        case _SelectionCancelled():
-          emit(
-            state.copyWith(
-              selectionMode: false,
-              selectedIds: const {},
-            ),
-          );
-        case _DocumentSelectionToggled(:final id):
-          final selectedIds = {...state.selectedIds};
-          if (!selectedIds.add(id)) {
-            selectedIds.remove(id);
-          }
-
-          emit(
-            state.copyWith(
-              selectedIds: selectedIds,
-              selectionMode: selectedIds.isNotEmpty,
-            ),
-          );
-        case _SelectAll():
-          emit(
-            state.copyWith(
-              selectionMode: true,
-              selectedIds: {
-                for (final document in state.documents) document.id,
-              },
-            ),
-          );
-        case _DeselectAll():
-          emit(
-            state.copyWith(
-              selectionMode: false,
-              selectedIds: const {},
-            ),
-          );
-        case _ImportFromFilesRequested():
-          await _importDocument(emit, _importService.pickFromFiles);
-        case _ImportFromGalleryRequested():
-          await _importDocument(emit, _importService.pickFromGallery);
-        case _ImportFromScannerRequested():
-          await _importDocument(
-            emit,
-            _importService.scanWithCunningDocumentScanner,
-          );
-      }
-    });
+    on<_Started>(_onStarted);
+    on<_DocumentsChanged>(_onDocumentsChanged);
+    on<_SearchChanged>(_onSearchChanged);
+    on<_FilterChanged>(_onFilterChanged);
+    on<_SelectionStarted>(_onSelectionStarted);
+    on<_SelectionCancelled>(_onSelectionCancelled);
+    on<_DocumentSelectionToggled>(_onDocumentSelectionToggled);
+    on<_SelectAll>(_onSelectAll);
+    on<_DeselectAll>(_onDeselectAll);
+    on<_ImportFromFilesRequested>(_onImportFromFilesRequested);
+    on<_ImportFromGalleryRequested>(_onImportFromGalleryRequested);
+    on<_ImportFromScannerRequested>(_onImportFromScannerRequested);
   }
 
   final DocumentsRepository _repository;
@@ -111,13 +46,142 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     return super.close();
   }
 
-  Future<void> _onStarted() async {
+  Future<void> _onStarted(
+    _Started event,
+    Emitter<DocumentsState> emit,
+  ) async {
     await _subscription?.cancel();
 
     _subscription = _repository.watchDocuments().listen(
       (documents) {
         add(DocumentsEvent.documentsChanged(documents));
       },
+    );
+  }
+
+  void _onDocumentsChanged(
+    _DocumentsChanged event,
+    Emitter<DocumentsState> emit,
+  ) {
+    _allDocuments = event.documents;
+    final selectedIds = _sanitizeSelectedIds(state.selectedIds);
+
+    emit(
+      state.copyWith(
+        documents: _applyFilters(),
+        selectedIds: selectedIds,
+        selectionMode: selectedIds.isNotEmpty,
+      ),
+    );
+  }
+
+  void _onSearchChanged(
+    _SearchChanged event,
+    Emitter<DocumentsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        searchQuery: event.query,
+        documents: _applyFilters(searchQuery: event.query),
+      ),
+    );
+  }
+
+  void _onFilterChanged(
+    _FilterChanged event,
+    Emitter<DocumentsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        filter: event.filter,
+        documents: _applyFilters(filter: event.filter),
+      ),
+    );
+  }
+
+  void _onSelectionStarted(
+    _SelectionStarted event,
+    Emitter<DocumentsState> emit,
+  ) {
+    emit(state.copyWith(selectionMode: true));
+  }
+
+  void _onSelectionCancelled(
+    _SelectionCancelled event,
+    Emitter<DocumentsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        selectionMode: false,
+        selectedIds: const {},
+      ),
+    );
+  }
+
+  void _onDocumentSelectionToggled(
+    _DocumentSelectionToggled event,
+    Emitter<DocumentsState> emit,
+  ) {
+    final selectedIds = {...state.selectedIds};
+    if (!selectedIds.add(event.id)) {
+      selectedIds.remove(event.id);
+    }
+
+    emit(
+      state.copyWith(
+        selectedIds: selectedIds,
+        selectionMode: selectedIds.isNotEmpty,
+      ),
+    );
+  }
+
+  void _onSelectAll(
+    _SelectAll event,
+    Emitter<DocumentsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        selectionMode: true,
+        selectedIds: {
+          for (final document in state.documents) document.id,
+        },
+      ),
+    );
+  }
+
+  void _onDeselectAll(
+    _DeselectAll event,
+    Emitter<DocumentsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        selectionMode: false,
+        selectedIds: const {},
+      ),
+    );
+  }
+
+  Future<void> _onImportFromFilesRequested(
+    _ImportFromFilesRequested event,
+    Emitter<DocumentsState> emit,
+  ) async {
+    await _importDocument(emit, _importService.pickFromFiles);
+  }
+
+  Future<void> _onImportFromGalleryRequested(
+    _ImportFromGalleryRequested event,
+    Emitter<DocumentsState> emit,
+  ) async {
+    await _importDocument(emit, _importService.pickFromGallery);
+  }
+
+  Future<void> _onImportFromScannerRequested(
+    _ImportFromScannerRequested event,
+    Emitter<DocumentsState> emit,
+  ) async {
+    await _importDocument(
+      emit,
+      _importService.scanWithCunningDocumentScanner,
     );
   }
 

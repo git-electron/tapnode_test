@@ -1,7 +1,7 @@
 part of 'documents_bloc.dart';
 
 @freezed
-abstract class DocumentsState with _$DocumentsState {
+sealed class DocumentsState with _$DocumentsState {
   const factory DocumentsState({
     @Default([]) List<DocumentModel> documents,
     @Default(DocumentsFilter.all) DocumentsFilter filter,
