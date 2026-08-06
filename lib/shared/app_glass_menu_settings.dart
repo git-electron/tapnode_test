@@ -15,7 +15,6 @@ LiquidGlassSettings appGlassMenuSettings(BuildContext context) {
       const BoxShadow(
         color: Color(0x80FFFFFF),
         blurRadius: 20,
-        spreadRadius: 0,
         offset: Offset(0, 4),
       ),
       BoxShadow(
