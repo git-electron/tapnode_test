@@ -5,8 +5,14 @@ sealed class FloatingActionsEvent with _$FloatingActionsEvent {
   const factory FloatingActionsEvent.openAddDocumentsPopup() =
       _OpenAddDocumentsPopup;
 
+  const factory FloatingActionsEvent.openAddDocumentsPopupFromAppBar() =
+      _OpenAddDocumentsPopupFromAppBar;
+
   const factory FloatingActionsEvent.closeAddDocumentsPopup() =
       _CloseAddDocumentsPopup;
+
+  const factory FloatingActionsEvent.dismissForAppBarMenu() =
+      _DismissForAppBarMenu;
 
   const factory FloatingActionsEvent.openSearch() = _OpenSearch;
 

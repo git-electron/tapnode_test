@@ -61,9 +61,12 @@ class _SearchButtonState extends State<_SearchButton> {
     FloatingActionsState state,
   ) {
     if (state.isSearchOpen) {
+      if (!state.shouldFocusSearchOnOpen) return;
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        if (!context.read<FloatingActionsBloc>().state.isSearchOpen) return;
+        final state = context.read<FloatingActionsBloc>().state;
+        if (!state.isSearchOpen || !state.shouldFocusSearchOnOpen) return;
         _focusNode.requestFocus();
       });
       return;

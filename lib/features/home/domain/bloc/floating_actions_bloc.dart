@@ -15,19 +15,54 @@ class FloatingActionsBloc
             state.copyWith(
               isAddDocumentsPopupOpen: true,
               isSearchOpen: false,
+              shouldRestoreSearchAfterPopup: false,
+              shouldFocusSearchOnOpen: false,
+            ),
+          );
+        case _OpenAddDocumentsPopupFromAppBar():
+          emit(
+            state.copyWith(
+              isAddDocumentsPopupOpen: true,
+              isSearchOpen: false,
+              shouldRestoreSearchAfterPopup: state.searchText.isNotEmpty,
+              shouldFocusSearchOnOpen: false,
             ),
           );
         case _CloseAddDocumentsPopup():
-          emit(state.copyWith(isAddDocumentsPopupOpen: false));
+          emit(
+            state.copyWith(
+              isAddDocumentsPopupOpen: false,
+              isSearchOpen: state.shouldRestoreSearchAfterPopup,
+              shouldRestoreSearchAfterPopup: false,
+              shouldFocusSearchOnOpen: false,
+            ),
+          );
+        case _DismissForAppBarMenu():
+          emit(
+            state.copyWith(
+              isAddDocumentsPopupOpen: false,
+              isSearchOpen: state.searchText.isNotEmpty,
+              shouldRestoreSearchAfterPopup: false,
+              shouldFocusSearchOnOpen: false,
+            ),
+          );
         case _OpenSearch():
           emit(
             state.copyWith(
               isAddDocumentsPopupOpen: false,
               isSearchOpen: true,
+              shouldRestoreSearchAfterPopup: false,
+              shouldFocusSearchOnOpen: true,
             ),
           );
         case _CloseSearch():
-          emit(state.copyWith(isSearchOpen: false));
+          emit(
+            state.copyWith(
+              isSearchOpen: false,
+              shouldRestoreSearchAfterPopup: false,
+              shouldFocusSearchOnOpen: false,
+            ),
+          );
         case _SearchTextChanged(:final text):
           emit(state.copyWith(searchText: text));
         case _ClearSearchAndClose():
@@ -35,6 +70,8 @@ class FloatingActionsBloc
             state.copyWith(
               isSearchOpen: false,
               searchText: '',
+              shouldRestoreSearchAfterPopup: false,
+              shouldFocusSearchOnOpen: false,
             ),
           );
       }

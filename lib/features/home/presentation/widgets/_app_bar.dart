@@ -115,7 +115,7 @@ class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
         _DropdownMenuItem(
           onTap: () {
             context.read<FloatingActionsBloc>().add(
-              const FloatingActionsEvent.openAddDocumentsPopup(),
+              const FloatingActionsEvent.openAddDocumentsPopupFromAppBar(),
             );
             _closeMenu();
           },
@@ -135,7 +135,13 @@ class _DropdownMenuButtonState extends State<_DropdownMenuButton> {
             color: context.colors.white,
             size: 19.55,
           ),
-          onPressed: toggleMenu,
+          onPressed: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+            context.read<FloatingActionsBloc>().add(
+              const FloatingActionsEvent.dismissForAppBarMenu(),
+            );
+            toggleMenu();
+          },
         );
       },
     );
