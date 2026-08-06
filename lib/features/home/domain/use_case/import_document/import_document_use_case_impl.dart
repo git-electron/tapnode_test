@@ -1,13 +1,14 @@
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
-import '../model/document_model.dart';
-import '../service/document_import/document_import_service.dart';
-import '../service/documents/documents_service.dart';
+import '../../model/document_model.dart';
+import '../../service/document_import/document_import_service.dart';
+import '../../service/documents/documents_service.dart';
+import 'import_document_use_case.dart';
 
-@injectable
-class ImportDocumentUseCase {
-  const ImportDocumentUseCase({
+@LazySingleton(as: ImportDocumentUseCase)
+class ImportDocumentUseCaseImpl implements ImportDocumentUseCase {
+  const ImportDocumentUseCaseImpl({
     required DocumentsService documentsService,
     required DocumentImportService importService,
     required Logger logger,
@@ -19,6 +20,7 @@ class ImportDocumentUseCase {
   final DocumentImportService _importService;
   final Logger _logger;
 
+  @override
   Future<bool> call(DocumentImportSource source) async {
     _logger.i('Documents import use case: import started source=$source');
     final draft = await _importService.importFrom(source);

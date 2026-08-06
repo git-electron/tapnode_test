@@ -6,10 +6,7 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
 import '../../model/document_model.dart';
-import '../../service/documents/documents_service.dart';
-import '../../service/documents_filter/documents_filter_service.dart';
-import '../../service/documents_selection/documents_selection_service.dart';
-import '../../use_case/import_document_use_case.dart';
+import '../../use_case/use_case.dart';
 
 part 'documents_event.dart';
 part 'documents_state.dart';
@@ -18,37 +15,55 @@ part 'documents_bloc.freezed.dart';
 @injectable
 class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   DocumentsBloc({
-    required DocumentsService documentsService,
-    required ImportDocumentUseCase importDocumentUseCase,
-    required DocumentsFilterService filterService,
-    required DocumentsSelectionService selectionService,
     required Logger logger,
-  }) : _documentsService = documentsService,
+    required WatchDocumentsUseCase watchDocumentsUseCase,
+    required ImportDocumentUseCase importDocumentUseCase,
+    required DeleteDocumentUseCase deleteDocumentUseCase,
+    required SelectAllDocumentsUseCase selectAllDocumentsUseCase,
+    required ApplyDocumentsFilterUseCase applyDocumentsFilterUseCase,
+    required ToggleDocumentSignedUseCase toggleDocumentSignedUseCase,
+    required RemoveSelectedDocumentUseCase removeSelectedDocumentUseCase,
+    required ToggleDocumentSelectionUseCase toggleDocumentSelectionUseCase,
+    required DeleteSelectedDocumentsUseCase deleteSelectedDocumentsUseCase,
+    required SanitizeSelectedDocumentsUseCase sanitizeSelectedDocumentsUseCase,
+  }) : _logger = logger,
+       _watchDocumentsUseCase = watchDocumentsUseCase,
        _importDocumentUseCase = importDocumentUseCase,
-       _filterService = filterService,
-       _selectionService = selectionService,
-       _logger = logger,
+       _deleteDocumentUseCase = deleteDocumentUseCase,
+       _selectAllDocumentsUseCase = selectAllDocumentsUseCase,
+       _applyDocumentsFilterUseCase = applyDocumentsFilterUseCase,
+       _toggleDocumentSignedUseCase = toggleDocumentSignedUseCase,
+       _removeSelectedDocumentUseCase = removeSelectedDocumentUseCase,
+       _toggleDocumentSelectionUseCase = toggleDocumentSelectionUseCase,
+       _deleteSelectedDocumentsUseCase = deleteSelectedDocumentsUseCase,
+       _sanitizeSelectedDocumentsUseCase = sanitizeSelectedDocumentsUseCase,
        super(const DocumentsState()) {
     on<_Started>(_onStarted);
-    on<_DocumentsChanged>(_onDocumentsChanged);
-    on<_SearchChanged>(_onSearchChanged);
-    on<_FilterChanged>(_onFilterChanged);
-    on<_SelectionStarted>(_onSelectionStarted);
-    on<_SelectionCancelled>(_onSelectionCancelled);
-    on<_DocumentSelectionToggled>(_onDocumentSelectionToggled);
     on<_SelectAll>(_onSelectAll);
     on<_DeselectAll>(_onDeselectAll);
-    on<_DocumentSignedToggled>(_onDocumentSignedToggled);
+    on<_SearchChanged>(_onSearchChanged);
+    on<_FilterChanged>(_onFilterChanged);
     on<_DeleteRequested>(_onDeleteRequested);
-    on<_SelectedDeleteRequested>(_onSelectedDeleteRequested);
     on<_ImportRequested>(_onImportRequested);
+    on<_DocumentsChanged>(_onDocumentsChanged);
+    on<_SelectionStarted>(_onSelectionStarted);
+    on<_SelectionCancelled>(_onSelectionCancelled);
+    on<_DocumentSignedToggled>(_onDocumentSignedToggled);
+    on<_SelectedDeleteRequested>(_onSelectedDeleteRequested);
+    on<_DocumentSelectionToggled>(_onDocumentSelectionToggled);
   }
 
-  final DocumentsService _documentsService;
-  final ImportDocumentUseCase _importDocumentUseCase;
-  final DocumentsFilterService _filterService;
-  final DocumentsSelectionService _selectionService;
   final Logger _logger;
+  final WatchDocumentsUseCase _watchDocumentsUseCase;
+  final ImportDocumentUseCase _importDocumentUseCase;
+  final DeleteDocumentUseCase _deleteDocumentUseCase;
+  final SelectAllDocumentsUseCase _selectAllDocumentsUseCase;
+  final ApplyDocumentsFilterUseCase _applyDocumentsFilterUseCase;
+  final ToggleDocumentSignedUseCase _toggleDocumentSignedUseCase;
+  final RemoveSelectedDocumentUseCase _removeSelectedDocumentUseCase;
+  final ToggleDocumentSelectionUseCase _toggleDocumentSelectionUseCase;
+  final DeleteSelectedDocumentsUseCase _deleteSelectedDocumentsUseCase;
+  final SanitizeSelectedDocumentsUseCase _sanitizeSelectedDocumentsUseCase;
 
   StreamSubscription<List<DocumentModel>>? _subscription;
   List<DocumentModel> _allDocuments = const [];
@@ -65,7 +80,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   ) async {
     await _subscription?.cancel();
 
-    _subscription = _documentsService.watch().listen(
+    _subscription = _watchDocumentsUseCase().listen(
       (documents) {
         add(DocumentsEvent.documentsChanged(documents));
       },
@@ -77,7 +92,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     Emitter<DocumentsState> emit,
   ) {
     _allDocuments = event.documents;
-    final selectedIds = _selectionService.sanitize(
+    final selectedIds = _sanitizeSelectedDocumentsUseCase(
       selectedIds: state.selectedIds,
       documents: _allDocuments,
     );
@@ -140,7 +155,10 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
   ) {
     emit(
       state.copyWith(
-        selectedIds: _selectionService.toggle(state.selectedIds, event.id),
+        selectedIds: _toggleDocumentSelectionUseCase(
+          selectedIds: state.selectedIds,
+          id: event.id,
+        ),
       ),
     );
   }
@@ -152,7 +170,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(
       state.copyWith(
         selectionMode: true,
-        selectedIds: _selectionService.selectAll(state.documents),
+        selectedIds: _selectAllDocumentsUseCase(state.documents),
       ),
     );
   }
@@ -174,7 +192,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     Emitter<DocumentsState> emit,
   ) async {
     try {
-      await _documentsService.toggleSigned(event.id);
+      await _toggleDocumentSignedUseCase(event.id);
     } on Object catch (error, stackTrace) {
       _logger.e(
         'Documents bloc: toggle signed failed',
@@ -192,8 +210,11 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(state.copyWith(loading: true, error: null));
 
     try {
-      await _documentsService.delete(event.id);
-      final selectedIds = _selectionService.remove(state.selectedIds, event.id);
+      await _deleteDocumentUseCase(event.id);
+      final selectedIds = _removeSelectedDocumentUseCase(
+        selectedIds: state.selectedIds,
+        id: event.id,
+      );
       emit(
         state.copyWith(
           loading: false,
@@ -226,9 +247,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     emit(state.copyWith(loading: true, error: null));
 
     try {
-      for (final id in ids) {
-        await _documentsService.delete(id);
-      }
+      await _deleteSelectedDocumentsUseCase(ids);
 
       emit(
         state.copyWith(
@@ -281,7 +300,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     DocumentsFilter? filter,
     String? searchQuery,
   }) {
-    return _filterService.apply(
+    return _applyDocumentsFilterUseCase(
       documents: _allDocuments,
       filter: filter ?? state.filter,
       searchQuery: searchQuery ?? state.searchQuery,
