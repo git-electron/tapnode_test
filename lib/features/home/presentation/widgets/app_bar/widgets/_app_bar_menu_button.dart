@@ -28,7 +28,7 @@ class _AppBarMenuButtonState extends State<_AppBarMenuButton> {
           glowColor: context.colors.white,
           enableInteractionGlow: false,
           selectionColor: const Color(0x14000000),
-          settings: _menuSettings(context),
+          settings: appGlassMenuSettings(context),
           menuWidth: 262,
           menuHeight: 104,
           menuBorderRadius: 34,
@@ -63,31 +63,6 @@ class _AppBarMenuButtonState extends State<_AppBarMenuButton> {
         icon: CupertinoIcons.add_circled_solid,
       ),
     ];
-  }
-
-  LiquidGlassSettings _menuSettings(BuildContext context) {
-    return LiquidGlassSettings(
-      glassColor: const Color(0xF2FFFFFF),
-      backerColor: const Color(0xCCFFFFFF),
-      blur: 18,
-      thickness: 28,
-      whitenStrength: 0.75,
-      whitenGated: false,
-      shadow: [
-        const BoxShadow(
-          color: Color(0x80FFFFFF),
-          blurRadius: 44,
-          spreadRadius: 8,
-          offset: Offset(0, 18),
-        ),
-        BoxShadow(
-          color: context.colors.black.withValues(alpha: .08),
-          blurRadius: 18,
-          spreadRadius: 2,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    );
   }
 
   void _handleMenuPressed({

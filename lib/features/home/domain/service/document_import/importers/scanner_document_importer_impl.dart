@@ -2,7 +2,6 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
 import '../../../model/document_model.dart';
-import '../../pdf_preview/pdf_preview_service.dart';
 import '../document_import_service.dart';
 import '../utils/path_utils.dart';
 
@@ -11,16 +10,16 @@ class ScannerDocumentImporterImpl implements ScannerDocumentImporter {
   const ScannerDocumentImporterImpl({
     required DocumentScanner scanner,
     required ImportedDocumentStorage storage,
-    required PdfPreviewService previewService,
+    required SafePdfPreviewGenerator previewGenerator,
     required Logger logger,
   }) : _scanner = scanner,
        _storage = storage,
-       _previewService = previewService,
+       _previewGenerator = previewGenerator,
        _logger = logger;
 
   final DocumentScanner _scanner;
   final ImportedDocumentStorage _storage;
-  final PdfPreviewService _previewService;
+  final SafePdfPreviewGenerator _previewGenerator;
   final Logger _logger;
 
   @override
@@ -34,7 +33,9 @@ class ScannerDocumentImporterImpl implements ScannerDocumentImporter {
 
     _logger.i('Document import: scanner PDF ready: $pdfPath');
     final importedPdfPath = await _storage.copyPdf(pdfPath);
-    final previewImagePaths = await _generatePreviewImagePaths(importedPdfPath);
+    final previewImagePaths = await _previewGenerator.generateForPdf(
+      importedPdfPath,
+    );
 
     return DocumentImportDraft(
       title: documentImportTitleFromPath(importedPdfPath),
@@ -42,20 +43,5 @@ class ScannerDocumentImporterImpl implements ScannerDocumentImporter {
       source: DocumentImportSource.scanner,
       previewImagePaths: previewImagePaths,
     );
-  }
-
-  Future<List<String>> _generatePreviewImagePaths(String pdfPath) async {
-    try {
-      return await _previewService.generateForPdf(pdfPath);
-    } on Object catch (error, stackTrace) {
-      _logger.w(
-        'Document import: failed to generate PDF preview, '
-        'document will be imported without previews: $pdfPath',
-        error: error,
-        stackTrace: stackTrace,
-      );
-
-      return const [];
-    }
   }
 }

@@ -39,6 +39,10 @@ abstract interface class ImagePdfFactory {
   });
 }
 
+abstract interface class SafePdfPreviewGenerator {
+  Future<List<String>> generateForPdf(String pdfPath);
+}
+
 class ImportedGalleryImage {
   const ImportedGalleryImage({
     required this.pdfPath,
