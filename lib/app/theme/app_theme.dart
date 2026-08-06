@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide Colors;
 
-import '../../gen/fonts.gen.dart';
+import '../gen/fonts.gen.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
 import 'system_ui_overlay.dart';

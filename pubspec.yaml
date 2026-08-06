@@ -58,6 +58,6 @@ flutter:
         - asset: assets/fonts/SF-Pro.ttf
 
 flutter_gen:
-  output: lib/gen/
+  output: lib/app/gen/
   integrations:
     flutter_svg: true
