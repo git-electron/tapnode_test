@@ -14,7 +14,7 @@ class _AddDocumentButtonFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      tween: Tween(end: _targetWidth()),
+      tween: Tween(end: _targetWidth(context)),
       duration: _AddDocumentButton.animationDuration,
       curve: Curves.easeOutExpo,
       builder: (context, width, child) {
@@ -43,11 +43,14 @@ class _AddDocumentButtonFrame extends StatelessWidget {
     );
   }
 
-  double _targetWidth() {
+  double _targetWidth(BuildContext context) {
     if (selectionMode) return _AddDocumentButton.collapsedWidth;
     if (state.isSearchOpen) return _AddDocumentButton.searchCloseSize;
-    if (state.isAddDocumentsPopupOpen) return _AddDocumentButton.collapsedWidth;
-    return _AddDocumentButton.expandedWidth;
+    if (state.isAddDocumentsPopupOpen) {
+      return _AddDocumentButton.collapsedWidth;
+    }
+
+    return _AddDocumentExpandedContent.width(context);
   }
 
   double _targetHeight() {
@@ -82,7 +85,7 @@ class _AddDocumentGlassButton extends StatelessWidget {
     return GlassButton.custom(
       height: height,
       width: width,
-      label: 'Add Document',
+      label: _AddDocumentExpandedContent.title(context),
       onTap: onTap,
       shape: const LiquidRoundedRectangle(borderRadius: 100),
       useOwnLayer: true,

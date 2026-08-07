@@ -20,9 +20,7 @@ class _AddDocumentButtonContent extends StatelessWidget {
         ),
         Opacity(
           opacity: progress,
-          child: selectionMode
-              ? const _AddDocumentShareIcon()
-              : const _AddDocumentCloseIcon(),
+          child: selectionMode ? const _AddDocumentShareIcon() : const _AddDocumentCloseIcon(),
         ),
       ],
     );
@@ -32,26 +30,49 @@ class _AddDocumentButtonContent extends StatelessWidget {
 class _AddDocumentExpandedContent extends StatelessWidget {
   const _AddDocumentExpandedContent();
 
+  static const horizontalPadding = 14.0;
+  static const iconSize = 24.0;
+  static const iconTextGap = 8.0;
+
+  static String title(BuildContext context) {
+    return 'Add Document';
+  }
+
+  static double width(BuildContext context) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: title(context),
+        style: context.styles.header2,
+      ),
+      maxLines: 1,
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+
+    return horizontalPadding * 2 + iconSize + iconTextGap + textPainter.width;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const Pad(
         vertical: 19,
-        horizontal: 14,
+        horizontal: horizontalPadding,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox.square(
-            dimension: 24,
+            dimension: iconSize,
             child: Icon(CupertinoIcons.add_circled_solid),
           ),
-          const Gap(8),
+          const Gap(iconTextGap),
           Text(
-            'Add Document',
+            title(context),
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            overflow: TextOverflow.visible,
             style: context.styles.header2,
           ),
         ],

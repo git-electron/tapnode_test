@@ -4,7 +4,6 @@ class _AddDocumentButton extends StatelessWidget {
   const _AddDocumentButton();
 
   static const height = 61.0;
-  static const expandedWidth = 178.0;
   static const collapsedWidth = 61.0;
   static const searchCloseSize = 48.0;
   static const animationDuration = Duration(milliseconds: 500);
@@ -12,8 +11,7 @@ class _AddDocumentButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentsBloc, DocumentsState>(
-      buildWhen: (previous, current) =>
-          previous.selectionMode != current.selectionMode,
+      buildWhen: (previous, current) => previous.selectionMode != current.selectionMode,
       builder: (context, documentsState) {
         return BlocBuilder<FloatingActionsBloc, FloatingActionsState>(
           builder: (context, state) {
