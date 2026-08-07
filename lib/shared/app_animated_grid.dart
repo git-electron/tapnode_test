@@ -4,7 +4,12 @@ import 'package:flutter/widgets.dart';
 
 typedef AppAnimatedGridIdOf<T, K extends Object> = K Function(T item);
 typedef AppAnimatedGridItemBuilder<T> = Widget Function(BuildContext context, T item);
-typedef AppAnimatedGridItemHeightBuilder<T> = double Function(BuildContext context, T item, double itemWidth);
+typedef AppAnimatedGridItemHeightBuilder<T> =
+    double Function(
+      BuildContext context,
+      T item,
+      double itemWidth,
+    );
 
 class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
   const AppAnimatedGrid({
@@ -46,13 +51,15 @@ class AppAnimatedGrid<T, K extends Object> extends StatefulWidget {
 
 class _AppAnimatedGridState<T, K extends Object> extends State<AppAnimatedGrid<T, K>> {
   final List<_AppAnimatedGridEntry<T, K>> _entries = [];
-  final List<Timer> _removeTimers = [];
+  final Map<K, Timer> _removeTimers = {};
 
   @override
   void initState() {
     super.initState();
+
     for (var index = 0; index < widget.items.length; index++) {
       final item = widget.items[index];
+
       _entries.add(
         _AppAnimatedGridEntry(
           item: item,
@@ -71,51 +78,65 @@ class _AppAnimatedGridState<T, K extends Object> extends State<AppAnimatedGrid<T
 
   @override
   void dispose() {
-    for (final timer in _removeTimers) {
+    for (final timer in _removeTimers.values) {
       timer.cancel();
     }
+
+    _removeTimers.clear();
+
     super.dispose();
   }
 
   void _syncItems(List<T> nextItems) {
-    final currentVisibleEntries = _entries.where((entry) => !entry.removing).toList(growable: false);
     final nextIds = nextItems.map(widget.idOf).toSet();
-    final removingEntries = _entries.where((entry) => entry.removing).toList();
-    final nextEntries = <_AppAnimatedGridEntry<T, K>>[];
+    final entriesById = <K, _AppAnimatedGridEntry<T, K>>{
+      for (final entry in _entries) entry.id: entry,
+    };
 
-    for (var index = 0; index < currentVisibleEntries.length; index++) {
-      final entry = currentVisibleEntries[index];
-      if (nextIds.contains(entry.id)) continue;
+    for (final entry in _entries) {
+      if (nextIds.contains(entry.id) || entry.removing) {
+        continue;
+      }
 
-      entry
-        ..removing = true
-        ..index = index;
-      removingEntries.add(entry);
-      final timer = Timer(widget.animationDuration, () {
-        if (!mounted) return;
-        setState(() => _entries.remove(entry));
-      });
-      _removeTimers.add(timer);
+      entry.removing = true;
+      _scheduleRemoval(entry);
     }
+
+    final nextEntries = <_AppAnimatedGridEntry<T, K>>[];
 
     for (var index = 0; index < nextItems.length; index++) {
       final nextItem = nextItems[index];
       final nextId = widget.idOf(nextItem);
-      final existingEntry = currentVisibleEntries.firstWhere(
-        (entry) => entry.id == nextId,
-        orElse: () => _AppAnimatedGridEntry(
+      final existingEntry = entriesById[nextId];
+
+      if (existingEntry != null) {
+        if (existingEntry.removing) {
+          _cancelRemoval(existingEntry);
+        }
+
+        existingEntry
+          ..item = nextItem
+          ..index = index;
+
+        nextEntries.add(existingEntry);
+      } else {
+        final newEntry = _AppAnimatedGridEntry<T, K>(
           item: nextItem,
           id: nextId,
           index: index,
           appearing: true,
-        ),
-      );
+        );
 
-      existingEntry
-        ..item = nextItem
-        ..index = index;
-      nextEntries.add(existingEntry);
+        entriesById[nextId] = newEntry;
+        nextEntries.add(newEntry);
+      }
     }
+
+    final removingEntries = _entries
+        .where(
+          (entry) => entry.removing && !nextIds.contains(entry.id) && !nextEntries.contains(entry),
+        )
+        .toList(growable: false);
 
     setState(() {
       _entries
@@ -126,10 +147,44 @@ class _AppAnimatedGridState<T, K extends Object> extends State<AppAnimatedGrid<T
 
     for (final entry in nextEntries.where((entry) => entry.appearing)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        setState(() => entry.appearing = false);
+        if (!mounted || !_entries.contains(entry) || !entry.appearing) {
+          return;
+        }
+
+        setState(() {
+          entry.appearing = false;
+        });
       });
     }
+  }
+
+  void _scheduleRemoval(_AppAnimatedGridEntry<T, K> entry) {
+    _removeTimers.remove(entry.id)?.cancel();
+
+    late final Timer timer;
+
+    timer = Timer(widget.animationDuration, () {
+      if (_removeTimers[entry.id] != timer) {
+        return;
+      }
+
+      _removeTimers.remove(entry.id);
+
+      if (!mounted || !entry.removing) {
+        return;
+      }
+
+      setState(() {
+        _entries.remove(entry);
+      });
+    });
+
+    _removeTimers[entry.id] = timer;
+  }
+
+  void _cancelRemoval(_AppAnimatedGridEntry<T, K> entry) {
+    _removeTimers.remove(entry.id)?.cancel();
+    entry.removing = false;
   }
 
   @override
@@ -139,22 +194,33 @@ class _AppAnimatedGridState<T, K extends Object> extends State<AppAnimatedGrid<T
     return LayoutBuilder(
       builder: (context, constraints) {
         final totalSpacing = widget.crossAxisSpacing * (widget.crossAxisCount - 1);
+
         final availableWidth = constraints.maxWidth - widget.padding.horizontal - totalSpacing;
+
         final itemWidth = availableWidth > 0 ? availableWidth / widget.crossAxisCount : 0.0;
+
         final visibleEntries = _entries.where((entry) => !entry.removing).toList(growable: false);
+
         final rows = (visibleEntries.length / widget.crossAxisCount).ceil();
+
         final rowHeights = _rowHeights(
           context: context,
           entries: visibleEntries,
           itemWidth: itemWidth,
           rows: rows,
         );
+
         final rowOffsets = _rowOffsets(rowHeights);
+
         final gapsCount = rowHeights.isNotEmpty ? rowHeights.length - 1 : 0;
+
         final contentHeight =
             widget.padding.top +
             widget.padding.bottom +
-            rowHeights.fold(0.0, (sum, height) => sum + height) +
+            rowHeights.fold(
+              0.0,
+              (sum, height) => sum + height,
+            ) +
             gapsCount * widget.mainAxisSpacing;
 
         return SingleChildScrollView(
@@ -189,13 +255,24 @@ class _AppAnimatedGridState<T, K extends Object> extends State<AppAnimatedGrid<T
     final defaultHeight = itemWidth / widget.childAspectRatio;
     final rowHeights = List<double>.filled(rows, defaultHeight);
     final itemHeightBuilder = widget.itemHeightBuilder;
-    if (itemHeightBuilder == null) return rowHeights;
+
+    if (itemHeightBuilder == null) {
+      return rowHeights;
+    }
 
     for (final entry in entries) {
       final row = entry.index ~/ widget.crossAxisCount;
-      if (row < 0 || row >= rowHeights.length) continue;
 
-      final itemHeight = itemHeightBuilder(context, entry.item, itemWidth);
+      if (row < 0 || row >= rowHeights.length) {
+        continue;
+      }
+
+      final itemHeight = itemHeightBuilder(
+        context,
+        entry.item,
+        itemWidth,
+      );
+
       if (itemHeight > rowHeights[row]) {
         rowHeights[row] = itemHeight;
       } else if (rowHeights[row] == defaultHeight) {
@@ -239,7 +316,9 @@ class _AppAnimatedGridPositionedItem<T, K extends Object> extends StatelessWidge
   Widget build(BuildContext context) {
     final column = entry.index % widget.crossAxisCount;
     final row = entry.index ~/ widget.crossAxisCount;
+
     final rowHeight = row < rowHeights.length ? rowHeights[row] : itemWidth / widget.childAspectRatio;
+
     final top = row < rowOffsets.length
         ? rowOffsets[row]
         : widget.padding.top + row * (rowHeight + widget.mainAxisSpacing);
@@ -259,7 +338,10 @@ class _AppAnimatedGridPositionedItem<T, K extends Object> extends StatelessWidge
           duration: widget.animationDuration,
           curve: widget.scaleCurve,
           scale: entry.removing || entry.appearing ? widget.hiddenScale : 1,
-          child: widget.itemBuilder(context, entry.item),
+          child: widget.itemBuilder(
+            context,
+            entry.item,
+          ),
         ),
       ),
     );
