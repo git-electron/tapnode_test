@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter/services.dart';
@@ -23,6 +24,9 @@ class _AppState extends State<App> {
       title: 'Signica',
       theme: AppTheme.light,
       routerConfig: _appRouter.config(),
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       builder: (context, child) {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: appSystemUiOverlayStyle,
