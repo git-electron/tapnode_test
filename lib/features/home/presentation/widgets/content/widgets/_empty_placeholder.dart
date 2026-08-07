@@ -14,12 +14,12 @@ class _EmptyPlaceholder extends StatelessWidget {
           Assets.images.emptyPlaceholder.image(height: 160),
           const Gap(18),
           Text(
-            'No Documents Yet',
+            'home.content.empty_placeholder.title'.tr(),
             style: context.styles.header1,
           ),
           const Gap(10),
           Text(
-            'Your can add documents from',
+            'home.content.empty_placeholder.description'.tr(),
             style: context.styles.text1.copyWith(
               color: const Color(0xff303030).withValues(alpha: .4),
             ),

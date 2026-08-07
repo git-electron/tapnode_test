@@ -14,7 +14,7 @@ class _SearchTextField extends StatelessWidget {
     return CupertinoTextField(
       controller: controller,
       focusNode: focusNode,
-      placeholder: 'Search Documents',
+      placeholder: 'home.floating_actions.search_documents'.tr(),
       autocorrect: false,
       enableSuggestions: false,
       smartDashesType: SmartDashesType.disabled,

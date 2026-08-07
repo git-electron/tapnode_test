@@ -13,17 +13,17 @@ class _AddDocumentPopupActions extends StatelessWidget {
 
   static final _actions = [
     _AddDocumentPopupAction(
-      label: 'Files',
+      label: 'home.floating_actions.add_document.buttons.files'.tr(),
       icon: Assets.images.files.image(fit: BoxFit.cover),
       source: DocumentImportSource.file,
     ),
     _AddDocumentPopupAction(
-      label: 'Photos',
+      label: 'home.floating_actions.add_document.buttons.photos'.tr(),
       icon: Assets.images.gallery.image(fit: BoxFit.cover),
       source: DocumentImportSource.gallery,
     ),
     _AddDocumentPopupAction(
-      label: 'Scanner',
+      label: 'home.floating_actions.add_document.buttons.scanner'.tr(),
       icon: Assets.images.camera.image(fit: BoxFit.cover),
       source: DocumentImportSource.scanner,
     ),
@@ -40,9 +40,7 @@ class _AddDocumentPopupActions extends StatelessWidget {
             ignoring: !state.isAddDocumentsPopupOpen,
             child: TweenAnimationBuilder<double>(
               tween: Tween(end: state.isAddDocumentsPopupOpen ? 1 : 0),
-              duration: state.isAddDocumentsPopupOpen
-                  ? _openDuration
-                  : _closeDuration,
+              duration: state.isAddDocumentsPopupOpen ? _openDuration : _closeDuration,
               builder: (context, progress, child) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -55,8 +53,7 @@ class _AddDocumentPopupActions extends StatelessWidget {
                         progress: progress,
                         isOpen: state.isAddDocumentsPopupOpen,
                       ),
-                      if (indexedAction.$1 != _actions.length - 1)
-                        const Gap(_gap),
+                      if (indexedAction.$1 != _actions.length - 1) const Gap(_gap),
                     ],
                   ],
                 );

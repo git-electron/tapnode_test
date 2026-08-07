@@ -17,12 +17,12 @@ class _DocumentsNotFoundPlaceholder extends StatelessWidget {
           ),
           const Gap(18),
           Text(
-            'Documents Not Found',
+            'home.content.not_found_placeholder.title'.tr(),
             style: context.styles.header1,
           ),
           const Gap(10),
           Text(
-            'Try changing filters or search query',
+            'home.content.not_found_placeholder.description'.tr(),
             style: context.styles.text1.copyWith(
               color: const Color(0xff303030).withValues(alpha: .4),
             ),

@@ -38,7 +38,7 @@ class _AddDocumentPopupTitle extends StatelessWidget {
               child: SizedBox(
                 width: _width,
                 child: Text(
-                  'Add Document From',
+                  'home.floating_actions.add_document.add_document_from'.tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,

@@ -18,7 +18,7 @@ class _DocumentQuickActionsMenuItem extends StatelessWidget {
           Expanded(
             child: _DocumentQuickActionButton(
               icon: CupertinoIcons.printer_fill,
-              label: 'Print',
+              label: 'home.content.document.context_menu.print'.tr(),
               onTap: onPrint,
             ),
           ),
@@ -26,7 +26,7 @@ class _DocumentQuickActionsMenuItem extends StatelessWidget {
           Expanded(
             child: _DocumentQuickActionButton(
               icon: CupertinoIcons.share,
-              label: 'Share',
+              label: 'home.content.document.context_menu.share'.tr(),
               onTap: onShare,
             ),
           ),

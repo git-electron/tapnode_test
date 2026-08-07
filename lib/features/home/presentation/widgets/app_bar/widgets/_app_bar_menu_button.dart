@@ -20,8 +20,7 @@ class _AppBarMenuButtonState extends State<_AppBarMenuButton> {
   Widget build(BuildContext context) {
     return BlocBuilder<DocumentsBloc, DocumentsState>(
       buildWhen: (previous, current) =>
-          previous.selectionMode != current.selectionMode ||
-          previous.searchQuery != current.searchQuery,
+          previous.selectionMode != current.selectionMode || previous.searchQuery != current.searchQuery,
       builder: (context, documentsState) {
         return GlassMenu(
           controller: _menuController,
@@ -52,14 +51,12 @@ class _AppBarMenuButtonState extends State<_AppBarMenuButton> {
     return [
       _AppBarMenuItem(
         onTap: () => _toggleSelectionMode(documentsState.selectionMode),
-        title: documentsState.selectionMode ? 'Cancel' : 'Select',
-        icon: documentsState.selectionMode
-            ? CupertinoIcons.xmark_circle
-            : CupertinoIcons.check_mark_circled,
+        title: documentsState.selectionMode ? 'home.app_bar.menu.cancel'.tr() : 'home.app_bar.menu.select'.tr(),
+        icon: documentsState.selectionMode ? CupertinoIcons.xmark_circle : CupertinoIcons.check_mark_circled,
       ),
       _AppBarMenuItem(
         onTap: () => _openAddDocumentsPopup(documentsState),
-        title: 'Add Document',
+        title: 'home.app_bar.menu.add_document'.tr(),
         icon: CupertinoIcons.add_circled_solid,
       ),
     ];
@@ -96,9 +93,7 @@ class _AppBarMenuButtonState extends State<_AppBarMenuButton> {
 
   void _toggleSelectionMode(bool isSelectionMode) {
     context.read<DocumentsBloc>().add(
-      isSelectionMode
-          ? const DocumentsEvent.selectionCancelled()
-          : const DocumentsEvent.selectionStarted(),
+      isSelectionMode ? const DocumentsEvent.selectionCancelled() : const DocumentsEvent.selectionStarted(),
     );
     _closeMenu();
   }

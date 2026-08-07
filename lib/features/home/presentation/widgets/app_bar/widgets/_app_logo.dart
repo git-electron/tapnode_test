@@ -14,7 +14,7 @@ class _AppLogo extends StatelessWidget {
           width: 38,
         ),
         Text(
-          'Signica',
+          'home.app_bar.title'.tr(),
           style: context.styles.logo.copyWith(
             color: context.colors.white,
           ),

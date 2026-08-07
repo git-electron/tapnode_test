@@ -27,7 +27,7 @@ class _DocumentDeleteMenuButton extends StatelessWidget {
               ),
               const Gap(8),
               Text(
-                'Delete',
+                'home.content.document.context_menu.delete'.tr(),
                 style: context.styles.dropdownMenu.copyWith(
                   color: CupertinoColors.systemRed,
                   fontSize: 17,

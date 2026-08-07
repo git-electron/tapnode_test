@@ -21,7 +21,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return CupertinoApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Signica',
+      title: 'title'.tr(),
       theme: AppTheme.light,
       routerConfig: _appRouter.config(),
       localizationsDelegates: context.localizationDelegates,

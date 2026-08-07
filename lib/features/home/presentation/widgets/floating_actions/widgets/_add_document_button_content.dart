@@ -35,7 +35,7 @@ class _AddDocumentExpandedContent extends StatelessWidget {
   static const iconTextGap = 8.0;
 
   static String title(BuildContext context) {
-    return 'Add Document';
+    return 'home.floating_actions.add_document.add_document'.tr();
   }
 
   static double width(BuildContext context) {

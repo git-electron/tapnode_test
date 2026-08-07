@@ -18,10 +18,10 @@ class _FiltersTabBar extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 GlassSegmentedControl(
-                  segments: const [
-                    GlassSegment(label: 'All'),
-                    GlassSegment(label: 'Signed'),
-                    GlassSegment(label: 'Unsigned'),
+                  segments: [
+                    GlassSegment(label: 'home.content.tab_bar.all'.tr()),
+                    GlassSegment(label: 'home.content.tab_bar.signed'.tr()),
+                    GlassSegment(label: 'home.content.tab_bar.unsigned'.tr()),
                   ],
                   selectedIndex: selectedIndex,
                   onSegmentSelected: (index) {

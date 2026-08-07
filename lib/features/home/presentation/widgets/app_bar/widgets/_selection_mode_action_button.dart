@@ -17,10 +17,12 @@ class _SelectionModeActionButton extends StatelessWidget {
 
   String get _title {
     if (_hasSelectedDocuments) {
-      return 'Deselect All (${state.selectedIds.length})';
+      return 'home.app_bar.selection.deselect_all'.tr(
+        namedArgs: {'selected_documents_count': state.selectedIds.length.toString()},
+      );
     }
 
-    return 'Select All';
+    return 'home.app_bar.selection.select_all'.tr();
   }
 
   @override
@@ -71,9 +73,7 @@ class _SelectionModeActionButton extends StatelessWidget {
 
   void _handleTap(BuildContext context) {
     context.read<DocumentsBloc>().add(
-      _hasSelectedDocuments
-          ? const DocumentsEvent.deselectAll()
-          : const DocumentsEvent.selectAll(),
+      _hasSelectedDocuments ? const DocumentsEvent.deselectAll() : const DocumentsEvent.selectAll(),
     );
   }
 

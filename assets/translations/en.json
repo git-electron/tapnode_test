@@ -1,0 +1,56 @@
+{
+    "title": "Signica",
+    "home": {
+        "app_bar": {
+            "title": "Signica",
+            "menu": {
+                "select": "Select",
+                "cancel": "Cancel",
+                "add_document": "Add Document"
+            },
+            "selection": {
+                "select_all": "Select All",
+                "deselect_all": "Deselect All ({selected_documents_count})"
+            }
+        },
+        "content": {
+            "tab_bar": {
+                "all": "All",
+                "signed": "Signed",
+                "unsigned": "Unsigned"
+            },
+            "document": {
+                "context_menu": {
+                    "print": "Print",
+                    "share": "Share",
+                    "delete": "Delete"
+                }
+            },
+            "empty_placeholder": {
+                "title": "No Documents Yet",
+                "description": "You can add documents from",
+                "buttons": {
+                    "files": "Files",
+                    "photos": "Photos",
+                    "scanner": "Scanner"
+                }
+            },
+            "not_found_placeholder": {
+                "title": "Documents Not Found",
+                "description": "Try changing filters or search query"
+            }
+        },
+        "floating_actions": {
+            "add_document": {
+                "add_document": "Add Document",
+                "add_document_from": "Add Document From",
+                "buttons": {
+                    "files": "Files",
+                    "photos": "Photos",
+                    "scanner": "Scanner"
+                }
+            },
+            "search_documents": "Search Documents"
+        }
+    }
+}

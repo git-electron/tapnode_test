@@ -11,7 +11,7 @@ class _EmptyPlaceholderImportActions extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AppGlassButton(
-              label: 'Files',
+              label: 'home.content.empty_placeholder.buttons.files'.tr(),
               icon: Assets.images.files.image(),
               onTap: () => _requestImport(
                 context,
@@ -20,7 +20,7 @@ class _EmptyPlaceholderImportActions extends StatelessWidget {
             ),
             const Gap(12),
             AppGlassButton(
-              label: 'Photos',
+              label: 'home.content.empty_placeholder.buttons.photos'.tr(),
               icon: Assets.images.gallery.image(),
               onTap: () => _requestImport(
                 context,
@@ -31,7 +31,7 @@ class _EmptyPlaceholderImportActions extends StatelessWidget {
         ),
         const Gap(12),
         AppGlassButton(
-          label: 'Scanner',
+          label: 'home.content.empty_placeholder.buttons.scanner'.tr(),
           icon: Assets.images.camera.image(),
           onTap: () => _requestImport(
             context,
